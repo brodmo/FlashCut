@@ -24,7 +24,7 @@ enum ConfigSerializer {
         let url = getUrl(for: filename)
 
         guard FileManager.default.fileExists(atPath: url.path) else {
-            return try migrateFromJSON(type, filename: filename)
+            return nil
         }
 
         do {
@@ -34,29 +34,6 @@ enum ConfigSerializer {
             Logger.log("Failed to deserialize \(filename): \(error)")
             throw error
         }
-    }
-
-    private static func migrateFromJSON<T>(_ type: T.Type, filename: String) throws -> T? where T: Codable {
-        let jsonUrl = configDirectory.appendingPathComponent("\(filename).json")
-        guard FileManager.default.fileExists(atPath: jsonUrl.path) else { return nil }
-
-        Logger.log("Migrating \(filename) from JSON to TOML...")
-
-        let jsonData = try Data(contentsOf: jsonUrl)
-        let value = try JSONDecoder().decode(type, from: jsonData)
-
-        // Save as TOML
-        try serialize(filename: filename, value)
-
-        // Backup old JSON
-        let timestamp = Int(Date().timeIntervalSince1970)
-        try? FileManager.default.moveItem(
-            at: jsonUrl,
-            to: configDirectory.appendingPathComponent("\(filename)-backup-\(timestamp).json")
-        )
-
-        Logger.log("Migrated \(filename) from JSON to TOML")
-        return value
     }
 }
 
