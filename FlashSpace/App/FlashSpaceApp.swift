@@ -13,8 +13,6 @@ import SwiftUI
 struct FlashCutApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.openWindow) private var openWindow
-    @Environment(\.dismissWindow) private var dismissWindow
-    @AppStorage("firstLaunch") private var firstLaunch = true
 
     @State private var cancellables = Set<AnyCancellable>()
 
@@ -44,7 +42,7 @@ struct FlashCutApp: App {
     }
 
     private func setupWindowHandling() {
-        // Setup notification handlers
+        // Setup notification handlers for keyboard shortcuts
         NotificationCenter.default
             .publisher(for: .openMainWindow)
             .sink { _ in
@@ -52,12 +50,6 @@ struct FlashCutApp: App {
                 NSApp.activate(ignoringOtherApps: true)
             }
             .store(in: &cancellables)
-
-        // Hide main window on launch (except first time)
-        if !firstLaunch {
-            dismissWindow(id: "main")
-        }
-        firstLaunch = false
     }
 
     private func showDockIcon() {
