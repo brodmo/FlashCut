@@ -44,10 +44,11 @@ struct FlashCutApp: App {
     }
 
     private func setupNotificationHandlers() {
-        // Listen for internal notification from AppDelegate to actually open window
+        // Listen for hotkey trigger to open window
         NotificationCenter.default
-            .publisher(for: .openMainWindowInternal)
-            .sink { _ in
+            .publisher(for: .openMainWindow)
+            .sink { [self] _ in
+                showDockIcon()
                 openWindow(id: "main")
             }
             .store(in: &cancellables)

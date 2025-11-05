@@ -10,24 +10,5 @@ import AppKit
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDependencies.shared.hotKeysManager.enableAll()
-
-        // Setup window opening notification handler (persists for app lifetime)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleOpenMainWindow),
-            name: .openMainWindow,
-            object: nil
-        )
-    }
-
-    @objc private func handleOpenMainWindow() {
-        // Show Dock icon when opening window
-        if NSApp.activationPolicy() != .regular {
-            NSApp.setActivationPolicy(.regular)
-        }
-
-        // Post notification to actually open the window (handled by SwiftUI App)
-        NotificationCenter.default.post(name: .openMainWindowInternal, object: nil)
-        NSApp.activate(ignoringOtherApps: true)
     }
 }
