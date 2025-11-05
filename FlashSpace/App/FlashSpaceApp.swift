@@ -21,7 +21,5 @@ struct FlashCutApp: App {
             SettingsView()
         }
         .windowResizability(.contentSize)
-
-        FlashCutMenuBar()
     }
 }

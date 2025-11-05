@@ -22,7 +22,6 @@ struct AppDependencies {
 
     let settingsRepository: SettingsRepository
     let generalSettings = GeneralSettings()
-    let menuBarSettings = MenuBarSettings()
     let focusManagerSettings = FocusManagerSettings()
     let workspaceSettings = WorkspaceSettings()
 
@@ -31,7 +30,6 @@ struct AppDependencies {
     private init() {
         self.settingsRepository = SettingsRepository(
             generalSettings: generalSettings,
-            menuBarSettings: menuBarSettings,
             focusManagerSettings: focusManagerSettings,
             workspaceSettings: workspaceSettings
         )

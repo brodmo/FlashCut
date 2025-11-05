@@ -10,13 +10,11 @@ import Foundation
 
 final class SettingsRepository: ObservableObject {
     private(set) var generalSettings: GeneralSettings
-    private(set) var menuBarSettings: MenuBarSettings
     private(set) var focusManagerSettings: FocusManagerSettings
     private(set) var workspaceSettings: WorkspaceSettings
 
     private lazy var allSettings: [SettingsProtocol] = [
         generalSettings,
-        menuBarSettings,
         focusManagerSettings,
         workspaceSettings
     ]
@@ -27,12 +25,10 @@ final class SettingsRepository: ObservableObject {
 
     init(
         generalSettings: GeneralSettings,
-        menuBarSettings: MenuBarSettings,
         focusManagerSettings: FocusManagerSettings,
         workspaceSettings: WorkspaceSettings
     ) {
         self.generalSettings = generalSettings
-        self.menuBarSettings = menuBarSettings
         self.focusManagerSettings = focusManagerSettings
         self.workspaceSettings = workspaceSettings
 

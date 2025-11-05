@@ -11,12 +11,6 @@ struct AppSettings: Codable {
     var showFlashSpace: AppHotKey?
     var showFloatingNotifications: Bool?
 
-    // Menu Bar
-    var showMenuBarTitle: Bool?
-    var showMenuBarIcon: Bool?
-    var menuBarTitleTemplate: String?
-    var menuBarDisplayAliases: String?
-
     // Focus Manager
     var enableFocusManagement: Bool?
     var centerCursorOnFocusChange: Bool?
