@@ -23,24 +23,6 @@ extension NSRunningApplication {
         mainWindow?.setPosition(position)
     }
 
-    func centerApp(display: DisplayName) {
-        guard let appFrame = frame else {
-            return Logger.log("Could not get frame for app: \(localizedName ?? "")")
-        }
-
-        guard let nsScreen = NSScreen.screen(display) else { return }
-        guard appFrame.getDisplay() != nsScreen.localizedName else { return }
-
-        let normalizedScreenFrame = nsScreen.normalizedFrame
-
-        let origin = CGPoint(
-            x: normalizedScreenFrame.midX - appFrame.width / 2.0,
-            y: normalizedScreenFrame.midY - appFrame.height / 2.0
-        )
-
-        setPosition(origin)
-    }
-
     func runWithoutAnimations(action: () -> ()) {
         let appElement = AXUIElementCreateApplication(processIdentifier)
         let wasEnabled = appElement.enhancedUserInterface

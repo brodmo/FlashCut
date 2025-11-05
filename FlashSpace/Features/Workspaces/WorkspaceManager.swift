@@ -8,8 +8,6 @@
 import AppKit
 import Combine
 
-typealias DisplayName = String
-
 final class WorkspaceManager: ObservableObject {
     // Minimal state for cycling and recent workspace switching
     private var lastActivatedWorkspace: Workspace?

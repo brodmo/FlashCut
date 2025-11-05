@@ -29,21 +29,4 @@ extension [NSRunningApplication] {
         // No floating apps feature in FlashCut, return all apps
         self
     }
-
-    func regularVisibleApps(onDisplays displays: Set<DisplayName>, excluding apps: [MacApp]) -> [NSRunningApplication] {
-        filter { app in
-            app.activationPolicy == .regular &&
-                !app.isHidden &&
-                !apps.containsApp(app) &&
-                app.isOnAnyDisplay(displays)
-        }
-    }
-
-    func regularApps(onDisplays displays: Set<DisplayName>, excluding apps: [MacApp]) -> [NSRunningApplication] {
-        filter { app in
-            app.activationPolicy == .regular &&
-                !apps.containsApp(app) &&
-                app.isOnAnyDisplay(displays)
-        }
-    }
 }
