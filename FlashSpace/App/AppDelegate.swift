@@ -9,8 +9,6 @@ import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Start as accessory app (no Dock icon)
-        NSApp.setActivationPolicy(.accessory)
         AppDependencies.shared.hotKeysManager.enableAll()
 
         // Setup window opening notification handler (persists for app lifetime)

@@ -12,7 +12,4 @@ extension Notification.Name {
     static let openMainWindow = Notification.Name("openMainWindow")
     static let openMainWindowInternal = Notification.Name("openMainWindowInternal")
     static let profileChanged = Notification.Name("profileChanged")
-    static let appGroupTransitionFinished = Notification.Name("workspaceTransitionFinished")
-    static let spaceControlArrowDown = Notification.Name("spaceControlArrowDown")
-    static let pipFocusChanged = Notification.Name("pipFocusChanged")
 }
