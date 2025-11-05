@@ -18,36 +18,37 @@ struct FlashCutApp: App {
 
     var body: some Scene {
         Window("⚡ FlashCut v\(AppConstants.version)", id: "main") {
-            WindowVisibilityHandler(
-                showDockIcon: showDockIcon,
-                hideDockIcon: hideDockIconIfNoWindows,
-                setupHandlers: setupWindowHandling
-            ) {
-                MainView()
-            }
+            MainView()
+                .onAppear {
+                    setupNotificationHandlers()
+                    showDockIcon()
+                }
+                .onDisappear {
+                    hideDockIconIfNoWindows()
+                }
         }
         .windowResizability(.contentSize)
         .defaultPosition(.center)
 
         Window("Settings", id: "settings") {
-            WindowVisibilityHandler(
-                showDockIcon: showDockIcon,
-                hideDockIcon: hideDockIconIfNoWindows
-            ) {
-                SettingsView()
-            }
+            SettingsView()
+                .onAppear {
+                    showDockIcon()
+                }
+                .onDisappear {
+                    hideDockIconIfNoWindows()
+                }
         }
         .windowResizability(.contentSize)
         .defaultPosition(.center)
     }
 
-    private func setupWindowHandling() {
-        // Setup notification handlers for keyboard shortcuts
+    private func setupNotificationHandlers() {
+        // Listen for internal notification from AppDelegate to actually open window
         NotificationCenter.default
-            .publisher(for: .openMainWindow)
+            .publisher(for: .openMainWindowInternal)
             .sink { _ in
                 openWindow(id: "main")
-                NSApp.activate(ignoringOtherApps: true)
             }
             .store(in: &cancellables)
     }
