@@ -40,15 +40,3 @@ extension AppGroup {
         return apps.contains { runningBundleIds.contains($0.bundleIdentifier) }
     }
 }
-
-extension [AppGroup] {
-    func skipWithoutRunningApps() -> [AppGroup] {
-        let runningBundleIds = NSWorkspace.shared.runningRegularApps
-            .compactMap(\.bundleIdentifier)
-            .asSet
-
-        return filter {
-            $0.apps.contains { runningBundleIds.contains($0.bundleIdentifier) }
-        }
-    }
-}

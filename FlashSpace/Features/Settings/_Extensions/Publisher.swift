@@ -15,13 +15,4 @@ extension Publisher where Output: Equatable {
             .dropFirst()
             .eraseToAnyPublisher()
     }
-
-    func settingsPublisher(debounce: Bool) -> AnyPublisher<(), Failure> {
-        if debounce {
-            self.debounce(for: .seconds(1), scheduler: DispatchQueue.main)
-                .settingsPublisher()
-        } else {
-            settingsPublisher()
-        }
-    }
 }

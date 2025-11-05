@@ -33,8 +33,4 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             dismissWindow(id: "main")
         }
     }
-
-    func applicationWillTerminate(_ notification: Notification) {
-        // PictureInPicture feature was removed in FlashCut fork
-    }
 }

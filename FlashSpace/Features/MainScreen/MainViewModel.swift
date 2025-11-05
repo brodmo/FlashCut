@@ -125,7 +125,7 @@ final class MainViewModel: ObservableObject {
     private func reloadAppGroups() {
         appGroups = appGroupRepository.appGroups
         if let selectedAppGroup, let appGroup = appGroupRepository.findAppGroup(with: selectedAppGroup.id) {
-            selectedAppGroups = [workspace]
+            selectedAppGroups = [appGroup]
         } else {
             selectedAppGroups = []
         }

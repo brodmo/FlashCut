@@ -72,7 +72,7 @@ final class AppGroupRepository: ObservableObject {
 
     func addApp(to appGroupId: AppGroupID, app: MacApp) {
         guard let appGroupIndex = appGroups.firstIndex(where: { $0.id == appGroupId }) else { return }
-        guard !workspaces[appGroupIndex].apps.contains(app) else { return }
+        guard !appGroups[appGroupIndex].apps.contains(app) else { return }
 
         appGroups[appGroupIndex].apps.append(app)
         notifyAboutChanges()
