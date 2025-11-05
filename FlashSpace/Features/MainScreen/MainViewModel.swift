@@ -26,10 +26,6 @@ final class MainViewModel: ObservableObject {
         didSet { saveWorkspace() }
     }
 
-    @Published var workspaceAssignShortcut: AppHotKey? {
-        didSet { saveWorkspace() }
-    }
-
     @Published var workspaceAppToFocus: MacApp? = AppConstants.lastFocusedOption {
         didSet { saveWorkspace() }
     }
@@ -119,7 +115,6 @@ final class MainViewModel: ObservableObject {
 
         workspaceName = selectedWorkspace?.name ?? ""
         workspaceShortcut = selectedWorkspace?.activateShortcut
-        workspaceAssignShortcut = selectedWorkspace?.assignAppShortcut
         workspaceApps = selectedWorkspace?.apps
         workspaceAppToFocus = selectedWorkspace?.appToFocus ?? AppConstants.lastFocusedOption
         workspaceSymbolIconName = selectedWorkspace?.symbolIconName
@@ -150,7 +145,6 @@ extension MainViewModel {
             id: selectedWorkspace.id,
             name: workspaceName,
             activateShortcut: workspaceShortcut,
-            assignAppShortcut: workspaceAssignShortcut,
             apps: selectedWorkspace.apps,
             appToFocus: workspaceAppToFocus == AppConstants.lastFocusedOption ? nil : workspaceAppToFocus,
             symbolIconName: workspaceSymbolIconName,

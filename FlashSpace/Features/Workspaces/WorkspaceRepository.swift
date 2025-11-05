@@ -41,7 +41,6 @@ final class WorkspaceRepository: ObservableObject {
             id: .init(),
             name: name,
             activateShortcut: nil,
-            assignAppShortcut: nil,
             apps: []
         )
         workspaces.append(workspace)

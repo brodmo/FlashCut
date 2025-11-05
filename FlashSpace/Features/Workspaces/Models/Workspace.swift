@@ -15,7 +15,6 @@ struct Workspace: Identifiable, Codable, Hashable {
         case id
         case name
         case activateShortcut = "shortcut"
-        case assignAppShortcut
         case apps
         case appToFocus
         case symbolIconName
@@ -25,7 +24,6 @@ struct Workspace: Identifiable, Codable, Hashable {
     var id: WorkspaceID
     var name: String
     var activateShortcut: AppHotKey?
-    var assignAppShortcut: AppHotKey?
     var apps: [MacApp]
     var appToFocus: MacApp?
     var symbolIconName: String?

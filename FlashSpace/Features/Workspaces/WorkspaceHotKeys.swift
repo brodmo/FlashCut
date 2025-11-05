@@ -29,7 +29,7 @@ final class WorkspaceHotKeys {
             getCycleWorkspacesHotKey(next: true)
         ] +
             workspaceRepository.workspaces
-            .flatMap { [getActivateHotKey(for: $0), getAssignAppHotKey(for: $0)] }
+            .compactMap { getActivateHotKey(for: $0) }
 
         return hotKeys.compactMap(\.self)
     }
@@ -55,12 +55,6 @@ final class WorkspaceHotKeys {
         }
 
         return (shortcut, action)
-    }
-
-    private func getAssignAppHotKey(for workspace: Workspace) -> (AppHotKey, () -> ())? {
-        guard let shortcut = workspace.assignAppShortcut else { return nil }
-
-        return (shortcut, { [weak self] in self?.assignApp(to: workspace) })
     }
 
     private func getCycleWorkspacesHotKey(next: Bool) -> (AppHotKey, () -> ())? {
@@ -92,26 +86,4 @@ final class WorkspaceHotKeys {
     }
 }
 
-extension WorkspaceHotKeys {
-    private func assignApp(to workspace: Workspace) {
-        guard let activeApp = NSWorkspace.shared.frontmostApplication else { return }
-        guard let appName = activeApp.localizedName else { return }
-        guard activeApp.activationPolicy == .regular else {
-            Alert.showOkAlert(
-                title: appName,
-                message: "This application is an agent (runs in background) and cannot be managed by FlashCut."
-            )
-            return
-        }
-
-        guard let updatedWorkspace = workspaceRepository.findWorkspace(with: workspace.id) else { return }
-
-        workspaceManager.assignApp(activeApp.toMacApp, to: updatedWorkspace)
-
-        Toast.showWith(
-            icon: "square.stack.3d.up",
-            message: "\(appName) - Assigned To \(workspace.name)",
-            textColor: .positive
-        )
-    }
-}
+// No assignment logic - users manage assignments via UI only

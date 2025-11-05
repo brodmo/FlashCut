@@ -103,18 +103,6 @@ extension WorkspaceManager {
         }
     }
 
-    func assignApp(_ app: MacApp, to workspace: Workspace) {
-        workspaceRepository.deleteAppFromAllWorkspaces(app: app)
-        workspaceRepository.addApp(to: workspace.id, app: app)
-
-        guard let targetWorkspace = workspaceRepository.findWorkspace(with: workspace.id) else { return }
-
-        // Just focus the next app in the workspace
-        AppDependencies.shared.focusManager.nextWorkspaceApp()
-
-        NotificationCenter.default.post(name: .appsListChanged, object: nil)
-    }
-
     func activateWorkspace(next: Bool, loop: Bool) {
         let workspaces = workspaceRepository.workspaces
 

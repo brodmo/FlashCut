@@ -57,9 +57,6 @@ struct WorkspaceConfigurationView: View {
             Text("Activate Shortcut:")
             HotKeyControl(shortcut: $viewModel.workspaceShortcut).padding(.bottom)
 
-            Text("Assign App Shortcut:")
-            HotKeyControl(shortcut: $viewModel.workspaceAssignShortcut).padding(.bottom)
-
             Toggle("Open apps on activation", isOn: $viewModel.isOpenAppsOnActivationEnabled).padding(.bottom)
         }
         .disabled(viewModel.selectedWorkspace == nil)
