@@ -20,28 +20,24 @@ struct FlashCutApp: App {
 
     var body: some Scene {
         Window("⚡ FlashCut v\(AppConstants.version)", id: "main") {
-            MainView()
-                .onAppear {
-                    showDockIcon()
-                }
-                .onDisappear {
-                    hideDockIconIfNoWindows()
-                }
+            WindowVisibilityHandler(
+                showDockIcon: showDockIcon,
+                hideDockIcon: hideDockIconIfNoWindows,
+                setupHandlers: setupWindowHandling
+            ) {
+                MainView()
+            }
         }
         .windowResizability(.contentSize)
         .defaultPosition(.center)
-        .onAppear {
-            setupWindowHandling()
-        }
 
         Window("Settings", id: "settings") {
-            SettingsView()
-                .onAppear {
-                    showDockIcon()
-                }
-                .onDisappear {
-                    hideDockIconIfNoWindows()
-                }
+            WindowVisibilityHandler(
+                showDockIcon: showDockIcon,
+                hideDockIcon: hideDockIconIfNoWindows
+            ) {
+                SettingsView()
+            }
         }
         .windowResizability(.contentSize)
         .defaultPosition(.center)
