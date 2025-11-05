@@ -24,9 +24,6 @@ final class WorkspaceHotKeys {
 
     func getHotKeys() -> [(AppHotKey, () -> ())] {
         let hotKeys = [
-            getAssignAppHotKey(for: nil),
-            getUnassignAppHotKey(),
-            getToggleAssignmentHotKey(),
             getRecentWorkspaceHotKey(),
             getCycleWorkspacesHotKey(next: false),
             getCycleWorkspacesHotKey(next: true)
@@ -60,36 +57,10 @@ final class WorkspaceHotKeys {
         return (shortcut, action)
     }
 
-    private func getAssignAppHotKey(for workspace: Workspace?) -> (AppHotKey, () -> ())? {
-        let shortcut = workspace == nil
-            ? workspaceSettings.assignFocusedApp
-            : workspace?.assignAppShortcut
-
-        guard let shortcut else { return nil }
+    private func getAssignAppHotKey(for workspace: Workspace) -> (AppHotKey, () -> ())? {
+        guard let shortcut = workspace.assignAppShortcut else { return nil }
 
         return (shortcut, { [weak self] in self?.assignApp(to: workspace) })
-    }
-
-    private func getUnassignAppHotKey() -> (AppHotKey, () -> ())? {
-        guard let shortcut = workspaceSettings.unassignFocusedApp else { return nil }
-
-        return (shortcut, { [weak self] in self?.unassignApp() })
-    }
-
-    private func getToggleAssignmentHotKey() -> (AppHotKey, () -> ())? {
-        guard let shortcut = workspaceSettings.toggleFocusedAppAssignment else { return nil }
-
-        let action = { [weak self] in
-            guard let self, let activeApp = NSWorkspace.shared.frontmostApplication else { return }
-
-            if workspaceRepository.workspaces.flatMap(\.apps).containsApp(activeApp) {
-                unassignApp()
-            } else {
-                assignApp(to: nil)
-            }
-        }
-
-        return (shortcut, action)
     }
 
     private func getCycleWorkspacesHotKey(next: Bool) -> (AppHotKey, () -> ())? {
@@ -122,7 +93,7 @@ final class WorkspaceHotKeys {
 }
 
 extension WorkspaceHotKeys {
-    private func assignApp(to workspace: Workspace?) {
+    private func assignApp(to workspace: Workspace) {
         guard let activeApp = NSWorkspace.shared.frontmostApplication else { return }
         guard let appName = activeApp.localizedName else { return }
         guard activeApp.activationPolicy == .regular else {
@@ -133,41 +104,14 @@ extension WorkspaceHotKeys {
             return
         }
 
-        // If no specific workspace provided, find which workspace the app belongs to
-        let targetWorkspace = workspace ?? workspaceRepository.workspaces.first { $0.apps.containsApp(activeApp) }
-
-        guard let targetWorkspace else {
-            Alert.showOkAlert(
-                title: "Error",
-                message: "Please use a workspace-specific assignment hotkey, or first add the app to a workspace."
-            )
-            return
-        }
-
-        guard let updatedWorkspace = workspaceRepository.findWorkspace(with: targetWorkspace.id) else { return }
+        guard let updatedWorkspace = workspaceRepository.findWorkspace(with: workspace.id) else { return }
 
         workspaceManager.assignApp(activeApp.toMacApp, to: updatedWorkspace)
 
         Toast.showWith(
             icon: "square.stack.3d.up",
-            message: "\(appName) - Assigned To \(targetWorkspace.name)",
+            message: "\(appName) - Assigned To \(workspace.name)",
             textColor: .positive
         )
-    }
-
-    private func unassignApp() {
-        guard let activeApp = NSWorkspace.shared.frontmostApplication else { return }
-        guard let appName = activeApp.localizedName else { return }
-
-        if workspaceRepository.workspaces.flatMap(\.apps).containsApp(activeApp) == true {
-            Toast.showWith(
-                icon: "square.stack.3d.up.slash",
-                message: "\(appName) - Removed From Workspaces",
-                textColor: .negative
-            )
-        }
-
-        workspaceRepository.deleteAppFromAllWorkspaces(app: activeApp.toMacApp)
-        NotificationCenter.default.post(name: .appsListChanged, object: nil)
     }
 }

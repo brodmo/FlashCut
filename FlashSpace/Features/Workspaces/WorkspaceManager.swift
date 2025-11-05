@@ -22,8 +22,7 @@ final class WorkspaceManager: ObservableObject {
 
     init(
         workspaceRepository: WorkspaceRepository,
-        settingsRepository: SettingsRepository,
-        displayManager: DisplayManager
+        settingsRepository: SettingsRepository
     ) {
         self.workspaceRepository = workspaceRepository
         self.workspaceSettings = settingsRepository.workspaceSettings

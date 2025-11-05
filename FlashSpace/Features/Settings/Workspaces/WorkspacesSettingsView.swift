@@ -17,13 +17,6 @@ struct WorkspacesSettingsView: View {
                     .help("Centers the cursor when activating an app group")
             }
 
-            Section("App Assignment") {
-                hotkey("Assign Visible Apps", for: $settings.assignVisibleApps)
-                hotkey("Assign Focused App", for: $settings.assignFocusedApp)
-                hotkey("Unassign Focused App", for: $settings.unassignFocusedApp)
-                hotkey("Toggle Focused App Assignment", for: $settings.toggleFocusedAppAssignment)
-            }
-
             Section("Group Cycling") {
                 hotkey("Recent Group", for: $settings.switchToRecentWorkspace)
                 hotkey("Previous Group", for: $settings.switchToPreviousWorkspace)

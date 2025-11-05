@@ -11,11 +11,6 @@ import Foundation
 final class WorkspaceSettings: ObservableObject {
     @Published var centerCursorOnAppActivation = false
 
-    @Published var assignFocusedApp: AppHotKey?
-    @Published var unassignFocusedApp: AppHotKey?
-    @Published var toggleFocusedAppAssignment: AppHotKey?
-    @Published var assignVisibleApps: AppHotKey?
-
     @Published var loopWorkspaces = true
     @Published var switchToRecentWorkspace: AppHotKey?
     @Published var switchToPreviousWorkspace: AppHotKey?
@@ -29,11 +24,6 @@ final class WorkspaceSettings: ObservableObject {
     private func observe() {
         observer = Publishers.MergeMany(
             $centerCursorOnAppActivation.settingsPublisher(),
-
-            $assignFocusedApp.settingsPublisher(),
-            $unassignFocusedApp.settingsPublisher(),
-            $toggleFocusedAppAssignment.settingsPublisher(),
-            $assignVisibleApps.settingsPublisher(),
 
             $loopWorkspaces.settingsPublisher(),
             $switchToRecentWorkspace.settingsPublisher(),
@@ -54,11 +44,6 @@ extension WorkspaceSettings: SettingsProtocol {
         observer = nil
         centerCursorOnAppActivation = appSettings.centerCursorOnAppActivation ?? false
 
-        assignFocusedApp = appSettings.assignFocusedApp
-        unassignFocusedApp = appSettings.unassignFocusedApp
-        toggleFocusedAppAssignment = appSettings.toggleFocusedAppAssignment
-        assignVisibleApps = appSettings.assignVisibleApps
-
         loopWorkspaces = appSettings.loopWorkspaces ?? true
         switchToRecentWorkspace = appSettings.switchToRecentWorkspace
         switchToPreviousWorkspace = appSettings.switchToPreviousWorkspace
@@ -68,11 +53,6 @@ extension WorkspaceSettings: SettingsProtocol {
 
     func update(_ appSettings: inout AppSettings) {
         appSettings.centerCursorOnAppActivation = centerCursorOnAppActivation
-
-        appSettings.assignFocusedApp = assignFocusedApp
-        appSettings.unassignFocusedApp = unassignFocusedApp
-        appSettings.toggleFocusedAppAssignment = toggleFocusedAppAssignment
-        appSettings.assignVisibleApps = assignVisibleApps
 
         appSettings.loopWorkspaces = loopWorkspaces
         appSettings.switchToRecentWorkspace = switchToRecentWorkspace
