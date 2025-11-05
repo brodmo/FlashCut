@@ -40,17 +40,6 @@ final class AppGroupHotKeys {
         let action = { [weak self] in
             guard let self, let updatedAppGroup = appGroupRepository.findAppGroup(with: appGroup.id) else { return }
 
-            // Show toast if there are no running apps and we won't auto-launch them
-            if !updatedAppGroup.hasRunningApps,
-               appGroup.apps.isEmpty || updatedAppGroup.openAppsOnActivation != true {
-                Toast.showWith(
-                    icon: "square.stack.3d.up",
-                    message: "\(appGroup.name) - No Running Apps To Show",
-                    textColor: .gray
-                )
-                return
-            }
-
             appGroupManager.activateAppGroup(updatedAppGroup, setFocus: true)
         }
 

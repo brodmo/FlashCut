@@ -9,7 +9,6 @@ struct AppSettings: Codable {
     // General
     var checkForUpdatesAutomatically: Bool?
     var showFlashSpace: AppHotKey?
-    var showFloatingNotifications: Bool?
 
     // Focus Manager
     var focusNextAppGroupApp: AppHotKey?

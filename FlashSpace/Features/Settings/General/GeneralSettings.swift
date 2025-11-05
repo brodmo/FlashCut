@@ -10,7 +10,6 @@ import Foundation
 
 final class GeneralSettings: ObservableObject {
     @Published var showFlashSpace: AppHotKey?
-    @Published var showFloatingNotifications = true
     @Published var checkForUpdatesAutomatically = false {
         didSet { UpdatesManager.shared.autoCheckForUpdates = checkForUpdatesAutomatically }
     }
@@ -23,8 +22,7 @@ final class GeneralSettings: ObservableObject {
     private func observe() {
         observer = Publishers.MergeMany(
             $showFlashSpace.settingsPublisher(),
-            $checkForUpdatesAutomatically.settingsPublisher(),
-            $showFloatingNotifications.settingsPublisher()
+            $checkForUpdatesAutomatically.settingsPublisher()
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] in self?.updateSubject.send() }
@@ -40,13 +38,11 @@ extension GeneralSettings: SettingsProtocol {
         observer = nil
         showFlashSpace = appSettings.showFlashSpace
         checkForUpdatesAutomatically = appSettings.checkForUpdatesAutomatically ?? false
-        showFloatingNotifications = appSettings.showFloatingNotifications ?? true
         observe()
     }
 
     func update(_ appSettings: inout AppSettings) {
         appSettings.showFlashSpace = showFlashSpace
         appSettings.checkForUpdatesAutomatically = checkForUpdatesAutomatically
-        appSettings.showFloatingNotifications = showFloatingNotifications
     }
 }

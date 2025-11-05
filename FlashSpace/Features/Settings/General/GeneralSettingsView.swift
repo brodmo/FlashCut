@@ -47,13 +47,6 @@ struct GeneralSettingsView: View {
             Section("Shortcuts") {
                 hotkey("Toggle FlashCut", for: $settings.showFlashSpace)
             }
-
-            Section("Notifications") {
-                Toggle("Enable Notifications", isOn: $settings.showFloatingNotifications)
-                Text("Some shortcuts will show a temporary notification.")
-                    .foregroundStyle(.secondary)
-                    .font(.callout)
-            }
         }
         .onAppear {
             isAutostartEnabled = AppDependencies.shared.autostartService.isLaunchAtLoginEnabled
