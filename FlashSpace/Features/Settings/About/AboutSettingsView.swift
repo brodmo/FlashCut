@@ -10,13 +10,24 @@ import SwiftUI
 struct AboutSettingsView: View {
     var body: some View {
         Form {
-            Section("FlashSpace") {
+            Section("FlashCut") {
                 HStack {
                     Text("Version \(AppConstants.version)")
                     Spacer()
+                    Button("GitHub") { openGitHub("brodmo/FlashSpace") }
+                    Button("Check for Updates") { UpdatesManager.shared.checkForUpdates() }
+                }
+                Text("FlashCut is a lightweight fork of FlashSpace by Wojciech Kulik")
+                    .foregroundStyle(.secondary)
+                    .font(.callout)
+            }
+
+            Section("Original Project") {
+                HStack {
+                    Text("FlashSpace by Wojciech Kulik")
+                    Spacer()
                     Button("GitHub") { openGitHub("wojciech-kulik/FlashSpace") }
                     Button("Release Notes") { openUrl("https://github.com/wojciech-kulik/FlashSpace/releases") }
-                    Button("Check for Updates") { UpdatesManager.shared.checkForUpdates() }
                 }
             }
 

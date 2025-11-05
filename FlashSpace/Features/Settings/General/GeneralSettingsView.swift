@@ -39,13 +39,13 @@ struct GeneralSettingsView: View {
                         }
                     }
                 }
-                Text("FlashSpace requires accessibility access to manage applications.")
+                Text("FlashCut requires accessibility access to manage applications.")
                     .foregroundColor(.secondary)
                     .font(.callout)
             }
 
             Section("Shortcuts") {
-                hotkey("Toggle FlashSpace", for: $settings.showFlashSpace)
+                hotkey("Toggle FlashCut", for: $settings.showFlashSpace)
             }
 
             Section("Notifications") {
