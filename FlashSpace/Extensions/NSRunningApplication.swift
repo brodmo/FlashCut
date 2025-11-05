@@ -27,7 +27,7 @@ extension [NSRunningApplication] {
 
     func excludeFloatingAppsOnDifferentScreen() -> [NSRunningApplication] {
         // No floating apps feature in FlashCut, return all apps
-        return self
+        self
     }
 
     func regularVisibleApps(onDisplays displays: Set<DisplayName>, excluding apps: [MacApp]) -> [NSRunningApplication] {

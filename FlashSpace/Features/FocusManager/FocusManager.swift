@@ -134,7 +134,6 @@ final class FocusManager {
             .activate()
     }
 
-
     private func getFocusedAppIndex() -> (Int, [MacApp])? {
         guard let focusedApp else { return nil }
 

@@ -35,6 +35,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        AppDependencies.shared.pictureInPictureManager.restoreAllWindows()
+        // PictureInPicture feature was removed in FlashCut fork
     }
 }
