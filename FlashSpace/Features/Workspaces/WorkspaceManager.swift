@@ -41,7 +41,7 @@ final class AppGroupManager: ObservableObject {
 
         // Otherwise just pick first running app from the group
         let fallbackApp = runningApps.findFirstMatch(with: appGroup.apps)
-        let fallbackToFinder = NSWorkspace.shared.runningApplications.first(where: \.isFinder)
+        let fallbackToFinder = NSWorkspace.shared.runningApplications.first { $0.bundleIdentifier == "com.apple.finder" }
 
         return fallbackApp ?? fallbackToFinder
     }
@@ -107,7 +107,7 @@ extension AppGroupManager {
             return
         }
 
-        var appGroupsToLoop = next ? appGroups : appGroups.reversed()
+        let appGroupsToLoop = next ? appGroups : appGroups.reversed()
 
         let nextAppGroups = appGroupsToLoop
             .drop(while: { $0.id != currentAppGroup.id })
