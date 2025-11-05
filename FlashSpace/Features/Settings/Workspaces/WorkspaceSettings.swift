@@ -17,7 +17,6 @@ final class WorkspaceSettings: ObservableObject {
     @Published var assignVisibleApps: AppHotKey?
 
     @Published var loopWorkspaces = true
-    @Published var switchToRecentWorkspace: AppHotKey?
     @Published var switchToPreviousWorkspace: AppHotKey?
     @Published var switchToNextWorkspace: AppHotKey?
 
@@ -36,7 +35,6 @@ final class WorkspaceSettings: ObservableObject {
             $assignVisibleApps.settingsPublisher(),
 
             $loopWorkspaces.settingsPublisher(),
-            $switchToRecentWorkspace.settingsPublisher(),
             $switchToPreviousWorkspace.settingsPublisher(),
             $switchToNextWorkspace.settingsPublisher()
         )
@@ -60,7 +58,6 @@ extension WorkspaceSettings: SettingsProtocol {
         assignVisibleApps = appSettings.assignVisibleApps
 
         loopWorkspaces = appSettings.loopWorkspaces ?? true
-        switchToRecentWorkspace = appSettings.switchToRecentWorkspace
         switchToPreviousWorkspace = appSettings.switchToPreviousWorkspace
         switchToNextWorkspace = appSettings.switchToNextWorkspace
         observe()
@@ -75,7 +72,6 @@ extension WorkspaceSettings: SettingsProtocol {
         appSettings.assignVisibleApps = assignVisibleApps
 
         appSettings.loopWorkspaces = loopWorkspaces
-        appSettings.switchToRecentWorkspace = switchToRecentWorkspace
         appSettings.switchToPreviousWorkspace = switchToPreviousWorkspace
         appSettings.switchToNextWorkspace = switchToNextWorkspace
     }

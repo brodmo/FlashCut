@@ -108,16 +108,6 @@ final class WorkspaceHotKeys {
 
         return (shortcut, action)
     }
-
-    private func getRecentWorkspaceHotKey() -> (AppHotKey, () -> ())? {
-        guard let shortcut = workspaceSettings.switchToRecentWorkspace else { return nil }
-
-        let action: () -> () = { [weak self] in
-            self?.workspaceManager.activateRecentWorkspace()
-        }
-
-        return (shortcut, action)
-    }
 }
 
 extension WorkspaceHotKeys {

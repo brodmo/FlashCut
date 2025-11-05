@@ -25,7 +25,6 @@ struct WorkspacesSettingsView: View {
             }
 
             Section("Group Cycling") {
-                hotkey("Recent Group", for: $settings.switchToRecentWorkspace)
                 hotkey("Previous Group", for: $settings.switchToPreviousWorkspace)
                 hotkey("Next Group", for: $settings.switchToNextWorkspace)
                 Toggle("Loop Groups", isOn: $settings.loopWorkspaces)

@@ -34,5 +34,4 @@ struct AppSettings: Codable {
     var assignVisibleApps: AppHotKey?
     var switchToPreviousWorkspace: AppHotKey?
     var switchToNextWorkspace: AppHotKey?
-    var switchToRecentWorkspace: AppHotKey?
 }

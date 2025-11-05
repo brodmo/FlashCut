@@ -23,7 +23,7 @@ final class WorkspaceRepository: ObservableObject {
     }
 
     private func loadWorkspaces() {
-        if let workspaces: [Workspace] = try? ConfigSerializer.deserialize(filename: "workspaces") {
+        if let workspaces = try? ConfigSerializer.deserialize([Workspace].self, filename: "workspaces") {
             self.workspaces = workspaces
         }
     }
