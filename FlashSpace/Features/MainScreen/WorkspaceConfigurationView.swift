@@ -1,5 +1,5 @@
 //
-//  AppGroupConfigurationView.swift
+//  WorkspaceConfigurationView.swift
 //
 //  Created by Wojciech Kulik on 20/02/2025.
 //  Copyright © 2025 Wojciech Kulik. All rights reserved.

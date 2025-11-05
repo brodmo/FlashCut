@@ -1,5 +1,5 @@
 //
-//  AppGroupHotKeys.swift
+//  WorkspaceHotKeys.swift
 //
 //  Created by Wojciech Kulik on 08/02/2025.
 //  Copyright © 2025 Wojciech Kulik. All rights reserved.

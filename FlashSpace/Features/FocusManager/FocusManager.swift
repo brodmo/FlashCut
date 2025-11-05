@@ -31,7 +31,7 @@ final class FocusManager {
     }
 
     func getHotKeys() -> [(AppHotKey, () -> ())] {
-        return [
+        [
             settings.focusNextAppGroupApp.flatMap { ($0, nextAppGroupApp) },
             settings.focusPreviousAppGroupApp.flatMap { ($0, previousAppGroupApp) }
         ].compactMap { $0 }

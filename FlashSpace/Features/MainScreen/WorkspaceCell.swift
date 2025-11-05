@@ -1,5 +1,5 @@
 //
-//  AppGroupCell.swift
+//  WorkspaceCell.swift
 //
 //  Created by Wojciech Kulik on 20/02/2025.
 //  Copyright © 2025 Wojciech Kulik. All rights reserved.
@@ -23,7 +23,7 @@ struct AppGroupCell: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 15, height: 15)
-                .foregroundStyle(Color.appGroupIcon)
+                .foregroundStyle(.secondary)
 
             Text(appGroup.name)
                 .lineLimit(1)
