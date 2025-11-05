@@ -36,7 +36,7 @@ enum ConfigSerializer {
         }
     }
 
-    private static func migrateFromJSON<T>(_ type: T.Type, filename: String) throws -> T? where T: Decodable {
+    private static func migrateFromJSON<T>(_ type: T.Type, filename: String) throws -> T? where T: Codable {
         let jsonUrl = configDirectory.appendingPathComponent("\(filename).json")
         guard FileManager.default.fileExists(atPath: jsonUrl.path) else { return nil }
 
