@@ -12,8 +12,6 @@ struct AppSettings: Codable {
     var showFloatingNotifications: Bool?
 
     // Focus Manager
-    var enableFocusManagement: Bool?
-    var centerCursorOnFocusChange: Bool?
     var focusNextAppGroupApp: AppHotKey?
     var focusPreviousAppGroupApp: AppHotKey?
     var focusNextAppGroupWindow: AppHotKey?

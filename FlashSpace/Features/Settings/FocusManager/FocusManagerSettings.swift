@@ -9,9 +9,6 @@ import Combine
 import Foundation
 
 final class FocusManagerSettings: ObservableObject {
-    @Published var enableFocusManagement = false
-    @Published var centerCursorOnFocusChange = false
-
     @Published var focusNextAppGroupApp: AppHotKey?
     @Published var focusPreviousAppGroupApp: AppHotKey?
     @Published var focusNextAppGroupWindow: AppHotKey?
@@ -24,8 +21,6 @@ final class FocusManagerSettings: ObservableObject {
 
     private func observe() {
         observer = Publishers.MergeMany(
-            $enableFocusManagement.settingsPublisher(),
-            $centerCursorOnFocusChange.settingsPublisher(),
             $focusNextAppGroupApp.settingsPublisher(),
             $focusPreviousAppGroupApp.settingsPublisher(),
             $focusNextAppGroupWindow.settingsPublisher(),
@@ -43,8 +38,6 @@ extension FocusManagerSettings: SettingsProtocol {
 
     func load(from appSettings: AppSettings) {
         observer = nil
-        enableFocusManagement = appSettings.enableFocusManagement ?? false
-        centerCursorOnFocusChange = appSettings.centerCursorOnFocusChange ?? false
         focusNextAppGroupApp = appSettings.focusNextAppGroupApp
         focusPreviousAppGroupApp = appSettings.focusPreviousAppGroupApp
         focusNextAppGroupWindow = appSettings.focusNextAppGroupWindow
@@ -53,8 +46,6 @@ extension FocusManagerSettings: SettingsProtocol {
     }
 
     func update(_ appSettings: inout AppSettings) {
-        appSettings.enableFocusManagement = enableFocusManagement
-        appSettings.centerCursorOnFocusChange = centerCursorOnFocusChange
         appSettings.focusNextAppGroupApp = focusNextAppGroupApp
         appSettings.focusPreviousAppGroupApp = focusPreviousAppGroupApp
         appSettings.focusNextAppGroupWindow = focusNextAppGroupWindow
