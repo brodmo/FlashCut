@@ -11,6 +11,7 @@ import SwiftUI
 struct MainView: View {
     @StateObject var viewModel = MainViewModel()
     @Environment(\.openWindow) var openWindow
+    @State private var editingAppGroupId: UUID?
 
     var body: some View {
         HStack(alignment: .top, spacing: 16.0) {
@@ -58,11 +59,30 @@ struct MainView: View {
                 editActions: .move,
                 selection: $viewModel.selectedAppGroups
             ) { $appGroup in
-                AppGroupCell(
-                    selectedApps: $viewModel.selectedApps,
-                    appGroup: $appGroup,
-                    selectedAppGroups: viewModel.selectedAppGroups
+                let isEditing = Binding(
+                    get: { editingAppGroupId == appGroup.id },
+                    set: { if $0 { editingAppGroupId = appGroup.id } else { editingAppGroupId = nil } }
                 )
+
+                HStack {
+                    AppGroupCell(
+                        selectedApps: $viewModel.selectedApps,
+                        appGroup: $appGroup,
+                        isEditing: isEditing
+                    )
+
+                    // Check selection directly in parent body - instant!
+                    if viewModel.selectedAppGroups.contains(appGroup) {
+                        Button(action: {
+                            editingAppGroupId = appGroup.id
+                        }) {
+                            Image(systemName: "pencil")
+                                .foregroundColor(.secondary)
+                                .font(.system(size: 11))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
                 .tag(appGroup.wrappedValue)
             }
             .tahoeBorder()

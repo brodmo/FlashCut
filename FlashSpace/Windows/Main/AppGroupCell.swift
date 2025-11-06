@@ -10,12 +10,11 @@ import UniformTypeIdentifiers
 
 struct AppGroupCell: View {
     @State var isTargeted = false
-    @State var isEditing = false
+    @Binding var isEditing: Bool
     @State var editedName = ""
     @FocusState private var isTextFieldFocused: Bool
     @Binding var selectedApps: Set<MacApp>
     @Binding var appGroup: AppGroup
-    let selectedAppGroups: Set<AppGroup>
 
     let appGroupManager: AppGroupManager = AppDependencies.shared.appGroupManager
     let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
@@ -46,18 +45,6 @@ struct AppGroupCell: View {
                     )
 
                 Spacer()
-
-                // Check selection directly in body - updates instantly on selection change
-                if selectedAppGroups.contains(appGroup) {
-                    Button(action: {
-                        isEditing = true
-                    }) {
-                        Image(systemName: "pencil")
-                            .foregroundColor(.secondary)
-                            .font(.system(size: 11))
-                    }
-                    .buttonStyle(.plain)
-                }
             }
         }
         .contentShape(Rectangle())
