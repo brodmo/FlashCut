@@ -51,8 +51,6 @@ struct MacApp: Codable, Hashable, Equatable {
                 self.bundleIdentifier = ""
                 self.iconPath = nil
             }
-
-            Migrations.appsMigrated = true
         } else {
             // V2
             let container = try decoder.container(keyedBy: CodingKeys.self)

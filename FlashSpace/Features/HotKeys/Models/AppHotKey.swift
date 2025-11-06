@@ -32,7 +32,6 @@ struct AppHotKey: Codable, Hashable {
             let modifiers = try container.decodeIfPresent(RawKeyModifiers.self, forKey: .modifiers)
 
             if let keyCode, let modifiers {
-                Migrations.hotKeysMigrated = true
                 self.init(keyCode: keyCode, modifiers: modifiers)
             } else {
                 throw DecodingError.dataCorruptedError(
