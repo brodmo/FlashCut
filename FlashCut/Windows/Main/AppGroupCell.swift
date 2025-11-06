@@ -47,6 +47,15 @@ struct AppGroupCell: View {
                 Spacer()
             }
         }
+        .onChange(of: isEditing) { newValue in
+            if newValue {
+                editedName = appGroup.name
+                // Small delay to ensure TextField is rendered before focusing
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    isTextFieldFocused = true
+                }
+            }
+        }
         .contentShape(Rectangle())
         .dropDestination(for: MacAppWithAppGroup.self) { apps, _ in
             guard let sourceAppGroupId = apps.first?.appGroupId else { return false }
@@ -70,10 +79,18 @@ struct AppGroupCell: View {
     private func saveName() {
         isEditing = false
         let trimmedName = editedName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedName.isEmpty, trimmedName != appGroup.name else { return }
+
+        // If empty, use a default name
+        let finalName = trimmedName.isEmpty ? "(empty)" : trimmedName
+
+        // Only update if the name has changed
+        guard finalName != appGroup.name else { return }
 
         var updatedAppGroup = appGroup
-        updatedAppGroup.name = trimmedName
+        updatedAppGroup.name = finalName
+
+        // Update both the binding and the repository
+        appGroup = updatedAppGroup
         appGroupRepository.updateAppGroup(updatedAppGroup)
     }
 }
