@@ -25,7 +25,7 @@ struct AppGroupCell: View {
                 TextField("Name", text: $editedName)
                     .textFieldStyle(.plain)
                     .focused($isTextFieldFocused)
-                    .onAppear {
+                    .task {
                         editedName = appGroup.name
                         isTextFieldFocused = true
                     }
@@ -45,15 +45,6 @@ struct AppGroupCell: View {
                     )
 
                 Spacer()
-            }
-        }
-        .onChange(of: isEditing) { newValue in
-            if newValue {
-                editedName = appGroup.name
-                // Use async to ensure TextField is in view hierarchy before focusing
-                DispatchQueue.main.async {
-                    isTextFieldFocused = true
-                }
             }
         }
         .contentShape(Rectangle())
