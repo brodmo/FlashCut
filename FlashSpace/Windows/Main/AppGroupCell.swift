@@ -12,6 +12,7 @@ struct AppGroupCell: View {
     @State var isTargeted = false
     @State var isEditing = false
     @State var editedName = ""
+    @State var isHovering = false
     @FocusState private var isTextFieldFocused: Bool
     @Binding var selectedApps: Set<MacApp>
     @Binding var appGroup: AppGroup
@@ -37,25 +38,31 @@ struct AppGroupCell: View {
                         isEditing = false
                     }
             } else {
-                HStack {
-                    Text(appGroup.name)
-                        .lineLimit(1)
-                        .foregroundColor(
-                            isTargeted || appGroup.apps.contains(where: \.bundleIdentifier.isEmpty)
-                                ? .errorRed
-                                : .primary
-                        )
-                    Spacer()
-                }
-                .contentShape(Rectangle())
-                .simultaneousGesture(
-                    TapGesture().onEnded { _ in
-                        if isSelected {
-                            isEditing = true
-                        }
+                Text(appGroup.name)
+                    .lineLimit(1)
+                    .foregroundColor(
+                        isTargeted || appGroup.apps.contains(where: \.bundleIdentifier.isEmpty)
+                            ? .errorRed
+                            : .primary
+                    )
+
+                Spacer()
+
+                if isHovering || isSelected {
+                    Button(action: {
+                        isEditing = true
+                    }) {
+                        Image(systemName: "pencil")
+                            .foregroundColor(.secondary)
+                            .font(.system(size: 11))
                     }
-                )
+                    .buttonStyle(.plain)
+                }
             }
+        }
+        .contentShape(Rectangle())
+        .onHover { hovering in
+            isHovering = hovering
         }
         .dropDestination(for: MacAppWithAppGroup.self) { apps, _ in
             guard let sourceAppGroupId = apps.first?.appGroupId else { return false }
