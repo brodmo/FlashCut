@@ -13,12 +13,12 @@ struct MainView: View {
     @Environment(\.openWindow) var openWindow
 
     var body: some View {
-        HStack(spacing: 16.0) {
+        HStack(alignment: .top, spacing: 16.0) {
             appGroups
             rightPanel
         }
         .padding()
-        .fixedSize()
+        .frame(width: 650, height: 450)
         .sheet(isPresented: $viewModel.isInputDialogPresented) {
             InputDialog(
                 title: "Enter App Group name:",
@@ -34,6 +34,9 @@ struct MainView: View {
 
             if viewModel.selectedAppGroup != nil {
                 assignedApps
+            } else {
+                Spacer()
+                    .frame(height: 200)
             }
 
             Spacer()
@@ -48,6 +51,7 @@ struct MainView: View {
                 }).keyboardShortcut(",")
             }
         }
+        .frame(width: 400)
     }
 
     private var appGroups: some View {
@@ -95,7 +99,7 @@ struct MainView: View {
                     app: app
                 )
             }
-            .frame(width: 200, height: 350)
+            .frame(height: 200)
             .tahoeBorder()
 
             HStack {
