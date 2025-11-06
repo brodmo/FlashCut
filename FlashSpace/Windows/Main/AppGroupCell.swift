@@ -37,21 +37,20 @@ struct AppGroupCell: View {
                         isEditing = false
                     }
             } else {
-                Text(appGroup.name)
-                    .lineLimit(1)
-                    .foregroundColor(
-                        isTargeted || appGroup.apps.contains(where: \.bundleIdentifier.isEmpty)
-                            ? .errorRed
-                            : .primary
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            Spacer()
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            if isSelected && !isEditing {
-                isEditing = true
+                HStack {
+                    Text(appGroup.name)
+                        .lineLimit(1)
+                        .foregroundColor(
+                            isTargeted || appGroup.apps.contains(where: \.bundleIdentifier.isEmpty)
+                                ? .errorRed
+                                : .primary
+                        )
+                    Spacer()
+                }
+                .contentShape(Rectangle())
+                .onTapGesture(count: 2) {
+                    isEditing = true
+                }
             }
         }
         .dropDestination(for: MacAppWithAppGroup.self) { apps, _ in
