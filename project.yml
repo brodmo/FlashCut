@@ -29,7 +29,7 @@ targets:
       path: FlashSpace/Info.plist
       properties:
         SUPublicEDKey: hbvsYKL66p7w+2WUBbAqOvUcUNckSstWcrwTaCBwZJM=
-        SUFeedURL: https://wojciechkulik.pl/FlashSpace/appcast.xml
+        SUFeedURL: https://brodmo.github.io/FlashCut/appcast.xml
 
     settings:
       base:
