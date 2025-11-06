@@ -50,7 +50,10 @@ struct AppGroupCell: View {
         .onChange(of: isEditing) { newValue in
             if newValue {
                 editedName = appGroup.name
-                isTextFieldFocused = true
+                // Use async to ensure TextField is in view hierarchy before focusing
+                DispatchQueue.main.async {
+                    isTextFieldFocused = true
+                }
             }
         }
         .contentShape(Rectangle())
