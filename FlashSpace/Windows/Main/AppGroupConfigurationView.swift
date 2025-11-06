@@ -41,7 +41,7 @@ struct AppGroupConfigurationView: View {
                         .foregroundColor(.secondary)
                 }
                 .frame(width: 16, height: 16)
-                .help("The primary app is always focused and launched if not running when activating this group")
+                .help(Text("The primary app is always focused and launched if not running when activating this group"))
 
                 Spacer()
 
