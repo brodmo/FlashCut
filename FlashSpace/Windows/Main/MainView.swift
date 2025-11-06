@@ -86,7 +86,7 @@ struct MainView: View {
     }
 
     private var assignedApps: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading) {
             List(
                 viewModel.appGroupApps ?? [],
                 id: \.self,
