@@ -8,20 +8,6 @@
 import SwiftUI
 import AppKit
 
-struct TooltipView: NSViewRepresentable {
-    let tooltip: String
-
-    func makeNSView(context: Context) -> NSView {
-        let view = NSView()
-        view.toolTip = tooltip
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {
-        nsView.toolTip = tooltip
-    }
-}
-
 struct AppGroupConfigurationView: View {
     @ObservedObject var viewModel: MainViewModel
 
@@ -52,7 +38,9 @@ struct AppGroupConfigurationView: View {
 
                 Image(systemName: "questionmark.circle")
                     .foregroundColor(.secondary)
-                    .overlay(TooltipView(tooltip: "The primary app is always focused and launched if not running when activating this group"))
+                    .frame(width: 16, height: 16)
+                    .contentShape(Rectangle())
+                    .help("The primary app is always focused and launched if not running when activating this group")
 
                 Spacer()
 
