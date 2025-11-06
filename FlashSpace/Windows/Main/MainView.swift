@@ -31,7 +31,7 @@ struct MainView: View {
     private var rightPanel: some View {
         VStack(alignment: .leading, spacing: 0) {
             AppGroupConfigurationView(viewModel: viewModel)
-                .frame(height: 60)
+                .frame(height: 85)
 
             if viewModel.selectedAppGroup != nil {
                 assignedApps
@@ -82,6 +82,7 @@ struct MainView: View {
 
                 Spacer()
             }
+            .padding(.top, 8)
         }
     }
 
@@ -97,7 +98,7 @@ struct MainView: View {
                     app: app
                 )
             }
-            .frame(width: 200, height: 290)
+            .frame(width: 200, height: 265)
             .tahoeBorder()
 
             HStack {
@@ -113,6 +114,7 @@ struct MainView: View {
                 .disabled(viewModel.selectedApps.isEmpty)
                 .keyboardShortcut(.delete)
             }
+            .padding(.top, 8)
         }
     }
 }

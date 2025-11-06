@@ -24,9 +24,12 @@ struct AppGroupConfigurationView: View {
     }
 
     private var configuration: some View {
-        VStack(alignment: .leading, spacing: 8.0) {
+        VStack(alignment: .leading, spacing: 0) {
             // Shortcut
             HotKeyControl(shortcut: $viewModel.appGroupShortcut)
+
+            Spacer()
+                .frame(height: 16)
 
             // Primary App with tooltip
             HStack(spacing: 4) {
