@@ -26,7 +26,7 @@ final class MainViewModel: ObservableObject {
         didSet { saveAppGroup() }
     }
 
-    @Published var appGroupAppToFocus: MacApp? = AppConstants.lastFocusedOption {
+    @Published var appGroupTargetApp: MacApp? = AppConstants.lastFocusedOption {
         didSet { saveAppGroup() }
     }
 
@@ -37,7 +37,7 @@ final class MainViewModel: ObservableObject {
     @Published var isInputDialogPresented = false
     @Published var userInput = ""
 
-    var focusAppOptions: [MacApp] {
+    var targetAppOptions: [MacApp] {
         [AppConstants.lastFocusedOption] + (appGroupApps ?? [])
     }
 
@@ -106,7 +106,7 @@ final class MainViewModel: ObservableObject {
         appGroupName = selectedAppGroup?.name ?? ""
         appGroupShortcut = selectedAppGroup?.activateShortcut
         appGroupApps = selectedAppGroup?.apps
-        appGroupAppToFocus = selectedAppGroup?.appToFocus ?? AppConstants.lastFocusedOption
+        appGroupTargetApp = selectedAppGroup?.targetApp ?? AppConstants.lastFocusedOption
         isOpenAppsOnActivationEnabled = selectedAppGroup?.openAppsOnActivation ?? false
         selectedAppGroup.flatMap { selectedAppGroups = [$0] }
     }
@@ -135,7 +135,7 @@ extension MainViewModel {
             name: appGroupName,
             activateShortcut: appGroupShortcut,
             apps: selectedAppGroup.apps,
-            appToFocus: appGroupAppToFocus == AppConstants.lastFocusedOption ? nil : appGroupAppToFocus,
+            targetApp: appGroupTargetApp == AppConstants.lastFocusedOption ? nil : appGroupTargetApp,
             openAppsOnActivation: isOpenAppsOnActivationEnabled
         )
 

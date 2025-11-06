@@ -1,5 +1,5 @@
 //
-//  FocusManagerSettings.swift
+//  AppManagerSettings.swift
 //
 //  Created by Wojciech Kulik on 16/02/2025.
 //  Copyright © 2025 Wojciech Kulik. All rights reserved.
@@ -8,9 +8,9 @@
 import Combine
 import Foundation
 
-final class FocusManagerSettings: ObservableObject {
-    @Published var focusNextAppGroupApp: AppHotKey?
-    @Published var focusPreviousAppGroupApp: AppHotKey?
+final class AppManagerSettings: ObservableObject {
+    @Published var switchToNextAppInGroup: AppHotKey?
+    @Published var switchToPreviousAppInGroup: AppHotKey?
 
     private var observer: AnyCancellable?
     private let updateSubject = PassthroughSubject<(), Never>()
@@ -19,28 +19,28 @@ final class FocusManagerSettings: ObservableObject {
 
     private func observe() {
         observer = Publishers.MergeMany(
-            $focusNextAppGroupApp.settingsPublisher(),
-            $focusPreviousAppGroupApp.settingsPublisher()
+            $switchToNextAppInGroup.settingsPublisher(),
+            $switchToPreviousAppInGroup.settingsPublisher()
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] in self?.updateSubject.send() }
     }
 }
 
-extension FocusManagerSettings: SettingsProtocol {
+extension AppManagerSettings: SettingsProtocol {
     var updatePublisher: AnyPublisher<(), Never> {
         updateSubject.eraseToAnyPublisher()
     }
 
     func load(from appSettings: AppSettings) {
         observer = nil
-        focusNextAppGroupApp = appSettings.focusNextAppGroupApp
-        focusPreviousAppGroupApp = appSettings.focusPreviousAppGroupApp
+        switchToNextAppInGroup = appSettings.switchToNextAppInGroup
+        switchToPreviousAppInGroup = appSettings.switchToPreviousAppInGroup
         observe()
     }
 
     func update(_ appSettings: inout AppSettings) {
-        appSettings.focusNextAppGroupApp = focusNextAppGroupApp
-        appSettings.focusPreviousAppGroupApp = focusPreviousAppGroupApp
+        appSettings.switchToNextAppInGroup = switchToNextAppInGroup
+        appSettings.switchToPreviousAppInGroup = switchToPreviousAppInGroup
     }
 }

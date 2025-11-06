@@ -16,7 +16,7 @@ struct AppGroup: Identifiable, Codable, Hashable {
         case name
         case activateShortcut = "shortcut"
         case apps
-        case appToFocus
+        case targetApp = "appToFocus"
         case openAppsOnActivation
     }
 
@@ -24,7 +24,7 @@ struct AppGroup: Identifiable, Codable, Hashable {
     var name: String
     var activateShortcut: AppHotKey?
     var apps: [MacApp]
-    var appToFocus: MacApp?
+    var targetApp: MacApp?
     var openAppsOnActivation: Bool?
 }
 

@@ -1,5 +1,5 @@
 //
-//  FocusManager.swift
+//  AppManager.swift
 //
 //  Created by Wojciech Kulik on 23/01/2025.
 //  Copyright © 2025 Wojciech Kulik. All rights reserved.
@@ -8,36 +8,32 @@
 import AppKit
 import Foundation
 
-final class FocusManager {
-    var visibleApps: [NSRunningApplication] {
-        NSWorkspace.shared.runningRegularApps.filter { !$0.isHidden }
-    }
-
-    var focusedApp: NSRunningApplication? { NSWorkspace.shared.frontmostApplication }
+final class AppManager {
+    var currentApp: NSRunningApplication? { NSWorkspace.shared.frontmostApplication }
 
     private let appGroupRepository: AppGroupRepository
     private let appGroupManager: AppGroupManager
-    private let settings: FocusManagerSettings
+    private let settings: AppManagerSettings
 
     init(
         appGroupRepository: AppGroupRepository,
         appGroupManager: AppGroupManager,
-        focusManagerSettings: FocusManagerSettings
+        appManagerSettings: AppManagerSettings
     ) {
         self.appGroupRepository = appGroupRepository
         self.appGroupManager = appGroupManager
-        self.settings = focusManagerSettings
+        self.settings = appManagerSettings
     }
 
     func getHotKeys() -> [(AppHotKey, () -> ())] {
         [
-            settings.focusNextAppGroupApp.flatMap { ($0, nextAppGroupApp) },
-            settings.focusPreviousAppGroupApp.flatMap { ($0, previousAppGroupApp) }
+            settings.switchToNextAppInGroup.flatMap { ($0, nextAppGroupApp) },
+            settings.switchToPreviousAppInGroup.flatMap { ($0, previousAppGroupApp) }
         ].compactMap { $0 }
     }
 
     func nextAppGroupApp() {
-        guard let (index, apps) = getFocusedAppIndex() else { return }
+        guard let (index, apps) = getCurrentAppIndex() else { return }
 
         let appsQueue = apps.dropFirst(index + 1) + apps.prefix(index)
         let runningApps = NSWorkspace.shared.runningApplications
@@ -51,7 +47,7 @@ final class FocusManager {
     }
 
     func previousAppGroupApp() {
-        guard let (index, apps) = getFocusedAppIndex() else { return }
+        guard let (index, apps) = getCurrentAppIndex() else { return }
 
         let runningApps = NSWorkspace.shared.runningApplications
             .compactMap(\.bundleIdentifier)
@@ -66,17 +62,17 @@ final class FocusManager {
             .activate()
     }
 
-    private func getFocusedAppIndex() -> (Int, [MacApp])? {
-        guard let focusedApp else { return nil }
+    private func getCurrentAppIndex() -> (Int, [MacApp])? {
+        guard let currentApp else { return nil }
 
-        // Find appGroup containing the focused app (stateless approach)
-        let appGroup = appGroupRepository.appGroups.first { $0.apps.containsApp(focusedApp) }
+        // Find appGroup containing the current app (stateless approach)
+        let appGroup = appGroupRepository.appGroups.first { $0.apps.containsApp(currentApp) }
 
         guard let appGroup else { return nil }
 
         let apps = appGroup.apps
 
-        let index = apps.firstIndex(of: focusedApp) ?? 0
+        let index = apps.firstIndex(of: currentApp) ?? 0
 
         return (index, apps)
     }

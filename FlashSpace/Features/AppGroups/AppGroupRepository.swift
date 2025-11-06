@@ -87,8 +87,8 @@ final class AppGroupRepository: ObservableObject {
     func deleteApp(from appGroupId: AppGroupID, app: MacApp, notify: Bool = true) {
         guard let appGroupIndex = appGroups.firstIndex(where: { $0.id == appGroupId }) else { return }
 
-        if appGroups[appGroupIndex].appToFocus == app {
-            appGroups[appGroupIndex].appToFocus = nil
+        if appGroups[appGroupIndex].targetApp == app {
+            appGroups[appGroupIndex].targetApp = nil
         }
 
         appGroups[appGroupIndex].apps.removeAll { $0 == app }
@@ -98,8 +98,8 @@ final class AppGroupRepository: ObservableObject {
     func deleteAppFromAllAppGroups(app: MacApp) {
         for (index, var appGroup) in appGroups.enumerated() {
             appGroup.apps.removeAll { $0 == app }
-            if appGroup.appToFocus == app {
-                appGroup.appToFocus = nil
+            if appGroup.targetApp == app {
+                appGroup.targetApp = nil
             }
 
             appGroups[index] = appGroup
@@ -117,8 +117,8 @@ final class AppGroupRepository: ObservableObject {
         guard let sourceAppGroupIndex = appGroups.firstIndex(where: { $0.id == sourceAppGroupId }),
               let targetAppGroupIndex = appGroups.firstIndex(where: { $0.id == targetAppGroupId }) else { return }
 
-        if let appToFocus = appGroups[sourceAppGroupIndex].appToFocus, apps.contains(appToFocus) {
-            appGroups[sourceAppGroupIndex].appToFocus = nil
+        if let targetApp = appGroups[sourceAppGroupIndex].targetApp, apps.contains(targetApp) {
+            appGroups[sourceAppGroupIndex].targetApp = nil
         }
 
         let targetAppBundleIds = appGroups[targetAppGroupIndex].apps.map(\.bundleIdentifier).asSet

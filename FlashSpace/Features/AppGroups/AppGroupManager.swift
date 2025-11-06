@@ -48,12 +48,12 @@ final class AppGroupManager: ObservableObject {
         recentlyActivatedApps[bundleId] = Date()
     }
 
-    private func findAppToFocus(in appGroup: AppGroup) -> NSRunningApplication? {
+    private func findApp(in appGroup: AppGroup) -> NSRunningApplication? {
         let runningApps = NSWorkspace.shared.runningApplications
             .filter { appGroup.apps.containsApp($0) }
 
-        // If appGroup has a preferred app to focus, use that
-        if let preferredApp = appGroup.appToFocus {
+        // If appGroup has a preferred target app, use that
+        if let preferredApp = appGroup.targetApp {
             if let app = runningApps.find(preferredApp) {
                 return app
             }
@@ -110,11 +110,11 @@ extension AppGroupManager {
         // Optionally launch apps in the group
         openAppsIfNeeded(in: appGroup)
 
-        // Simply focus an app in the group if requested
+        // Simply activate an app in the group if requested
         if setFocus {
-            let toFocus = findAppToFocus(in: appGroup)
-            Logger.log("FOCUS: \(toFocus?.localizedName ?? "none")")
-            toFocus?.activate()
+            let appToActivate = findApp(in: appGroup)
+            Logger.log("ACTIVATE: \(appToActivate?.localizedName ?? "none")")
+            appToActivate?.activate()
         }
     }
 

@@ -37,8 +37,8 @@ struct AppGroupConfigurationView: View {
                 .onSubmit(viewModel.saveAppGroup)
                 .padding(.bottom)
 
-            Picker("Primary App:", selection: $viewModel.appGroupAppToFocus) {
-                ForEach(viewModel.focusAppOptions, id: \.self) {
+            Picker("Primary App:", selection: $viewModel.appGroupTargetApp) {
+                ForEach(viewModel.targetAppOptions, id: \.self) {
                     Text($0.name.padEnd(toLength: 20)).tag($0)
                 }
             }.padding(.bottom)
