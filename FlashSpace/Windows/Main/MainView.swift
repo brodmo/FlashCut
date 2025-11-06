@@ -56,21 +56,18 @@ struct MainView: View {
         VStack(alignment: .leading) {
             List(selection: $selectedAppGroupIds) {
                 ForEach($viewModel.appGroups) { $appGroup in
-                    let isEditing = Binding(
-                        get: { editingAppGroupId == appGroup.id },
-                        set: { if $0 { editingAppGroupId = appGroup.id } else { editingAppGroupId = nil } }
-                    )
-
                     HStack {
                         AppGroupCell(
-                            isEditing: isEditing,
+                            isEditing: Binding(
+                                get: { editingAppGroupId == appGroup.id },
+                                set: { if $0 { editingAppGroupId = appGroup.id } else { editingAppGroupId = nil } }
+                            ),
                             selectedApps: $viewModel.selectedApps,
                             appGroup: $appGroup
                         )
 
                         Spacer()
 
-                        // Check selection directly in parent body - instant with @State!
                         if selectedAppGroupIds.contains(appGroup.id) {
                             Button(action: {
                                 editingAppGroupId = appGroup.id
@@ -89,7 +86,6 @@ struct MainView: View {
                 }
             }
             .onChange(of: selectedAppGroupIds) { newIds in
-                // Sync to viewModel
                 viewModel.selectedAppGroups = Set(viewModel.appGroups.filter { newIds.contains($0.id) })
             }
             .tahoeBorder()

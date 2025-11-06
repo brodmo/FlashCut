@@ -43,12 +43,15 @@ struct AppGroupConfigurationView: View {
                 Spacer()
 
                 Picker("", selection: $viewModel.appGroupTargetApp) {
-                    ForEach(viewModel.targetAppOptions, id: \.self) {
-                        Text($0.name).tag($0)
+                    ForEach(viewModel.targetAppOptions, id: \.self) { app in
+                        Text(app.name)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .tag(app)
                     }
                 }
                 .labelsHidden()
-                .fixedSize()
+                .frame(maxWidth: 100)
             }
         }
         .padding(.top, 12)
