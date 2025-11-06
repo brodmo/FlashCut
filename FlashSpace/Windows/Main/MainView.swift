@@ -12,6 +12,7 @@ struct MainView: View {
     @StateObject var viewModel = MainViewModel()
     @Environment(\.openWindow) var openWindow
     @State private var editingAppGroupId: UUID?
+    @State private var selectedAppGroupIds: Set<UUID> = []
 
     var body: some View {
         HStack(alignment: .top, spacing: 16.0) {
@@ -53,37 +54,43 @@ struct MainView: View {
 
     private var appGroups: some View {
         VStack(alignment: .leading) {
-            List(
-                $viewModel.appGroups,
-                id: \.self,
-                editActions: .move,
-                selection: $viewModel.selectedAppGroups
-            ) { $appGroup in
-                let isEditing = Binding(
-                    get: { editingAppGroupId == appGroup.id },
-                    set: { if $0 { editingAppGroupId = appGroup.id } else { editingAppGroupId = nil } }
-                )
-
-                HStack {
-                    AppGroupCell(
-                        selectedApps: $viewModel.selectedApps,
-                        appGroup: $appGroup,
-                        isEditing: isEditing
+            List(selection: $selectedAppGroupIds) {
+                ForEach($viewModel.appGroups) { $appGroup in
+                    let isEditing = Binding(
+                        get: { editingAppGroupId == appGroup.id },
+                        set: { if $0 { editingAppGroupId = appGroup.id } else { editingAppGroupId = nil } }
                     )
 
-                    // Check selection directly in parent body - instant!
-                    if viewModel.selectedAppGroups.contains(appGroup) {
-                        Button(action: {
-                            editingAppGroupId = appGroup.id
-                        }) {
-                            Image(systemName: "pencil")
-                                .foregroundColor(.secondary)
-                                .font(.system(size: 11))
+                    HStack {
+                        AppGroupCell(
+                            isEditing: isEditing,
+                            selectedApps: $viewModel.selectedApps,
+                            appGroup: $appGroup
+                        )
+
+                        Spacer()
+
+                        // Check selection directly in parent body - instant with @State!
+                        if selectedAppGroupIds.contains(appGroup.id) {
+                            Button(action: {
+                                editingAppGroupId = appGroup.id
+                            }) {
+                                Image(systemName: "pencil")
+                                    .foregroundColor(.secondary)
+                                    .font(.system(size: 11))
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
+                    .tag(appGroup.id)
                 }
-                .tag(appGroup.wrappedValue)
+                .onMove { from, to in
+                    viewModel.appGroups.move(fromOffsets: from, toOffset: to)
+                }
+            }
+            .onChange(of: selectedAppGroupIds) { newIds in
+                // Sync to viewModel
+                viewModel.selectedAppGroups = Set(viewModel.appGroups.filter { newIds.contains($0.id) })
             }
             .tahoeBorder()
 
