@@ -20,7 +20,29 @@ struct GeneralSettingsView: View {
             }
 
             Section("Shortcuts") {
-                hotkey("Toggle FlashCut", for: $settings.showFlashCut)
+                hotkey("Toggle FlashCut Window", for: $settings.showFlashCut)
+            }
+
+            Section("Configuration File") {
+                HStack {
+                    Text("Format: TOML")
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack {
+                    Text("Location:")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Reveal in Finder") {
+                        NSWorkspace.shared.open(ConfigSerializer.configDirectory)
+                    }
+                }
+
+                Text(
+                    "Manual edits require a restart. Formatting and comments will be overwritten when changed in the app."
+                )
+                .foregroundStyle(.secondary)
+                .font(.callout)
             }
         }
         .onAppear {

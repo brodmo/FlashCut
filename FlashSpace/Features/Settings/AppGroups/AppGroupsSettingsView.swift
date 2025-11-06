@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AppGroupsSettingsView: View {
     @StateObject var settings = AppDependencies.shared.appGroupSettings
+    @StateObject var appManagerSettings = AppDependencies.shared.appManagerSettings
 
     var body: some View {
         Form {
@@ -18,6 +19,11 @@ struct AppGroupsSettingsView: View {
                 hotkey("Next Group", for: $settings.switchToNextAppGroup)
                 Toggle("Loop Groups", isOn: $settings.loopAppGroups)
                     .help("Loop back to the first group when cycling past the last")
+            }
+
+            Section("App Switching Within Group") {
+                hotkey("Switch to Next App in Group", for: $appManagerSettings.switchToNextAppInGroup)
+                hotkey("Switch to Previous App in Group", for: $appManagerSettings.switchToPreviousAppInGroup)
             }
         }
         .formStyle(.grouped)
