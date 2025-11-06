@@ -15,6 +15,7 @@ struct AppGroupCell: View {
     @FocusState private var isTextFieldFocused: Bool
     @Binding var selectedApps: Set<MacApp>
     @Binding var appGroup: AppGroup
+    let isSelected: Bool
 
     let appGroupManager: AppGroupManager = AppDependencies.shared.appGroupManager
     let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
@@ -43,13 +44,16 @@ struct AppGroupCell: View {
                             ? .errorRed
                             : .primary
                     )
-                    .onTapGesture(count: 2) {
-                        isEditing = true
-                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             Spacer()
         }
         .contentShape(Rectangle())
+        .onTapGesture {
+            if isSelected && !isEditing {
+                isEditing = true
+            }
+        }
         .dropDestination(for: MacAppWithAppGroup.self) { apps, _ in
             guard let sourceAppGroupId = apps.first?.appGroupId else { return false }
 
