@@ -82,7 +82,6 @@ struct MainView: View {
 
                 Spacer()
             }
-            .padding(.top, 8)
         }
     }
 
