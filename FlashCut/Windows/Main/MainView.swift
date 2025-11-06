@@ -23,14 +23,9 @@ struct MainView: View {
         .frame(minWidth: 450, minHeight: 350)
         .onChange(of: viewModel.newlyCreatedAppGroupId) { newId in
             if let newId {
-                // Update the list selection to include the new app group
                 selectedAppGroupIds = [newId]
-
-                // Give the view a moment to update before entering edit mode
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    editingAppGroupId = newId
-                    viewModel.newlyCreatedAppGroupId = nil
-                }
+                editingAppGroupId = newId
+                viewModel.newlyCreatedAppGroupId = nil
             }
         }
     }

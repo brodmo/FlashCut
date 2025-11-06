@@ -50,10 +50,7 @@ struct AppGroupCell: View {
         .onChange(of: isEditing) { newValue in
             if newValue {
                 editedName = appGroup.name
-                // Small delay to ensure TextField is rendered before focusing
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    isTextFieldFocused = true
-                }
+                isTextFieldFocused = true
             }
         }
         .contentShape(Rectangle())
