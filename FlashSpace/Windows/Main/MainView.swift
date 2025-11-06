@@ -18,7 +18,7 @@ struct MainView: View {
             rightPanel
         }
         .padding()
-        .frame(width: 470, height: 460)
+        .frame(width: 470, height: 470)
         .sheet(isPresented: $viewModel.isInputDialogPresented) {
             InputDialog(
                 title: "Enter App Group name:",
@@ -35,20 +35,20 @@ struct MainView: View {
 
             if viewModel.selectedAppGroup != nil {
                 assignedApps
-            }
-
-            Spacer()
-
-            HStack {
+            } else {
                 Spacer()
-                Button(action: {
-                    openWindow(id: "settings")
-                }, label: {
-                    Image(systemName: "gearshape")
-                        .foregroundColor(.primary)
-                }).keyboardShortcut(",")
+
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        openWindow(id: "settings")
+                    }, label: {
+                        Image(systemName: "gearshape")
+                            .foregroundColor(.primary)
+                    }).keyboardShortcut(",")
+                }
+                .frame(width: 200)
             }
-            .frame(width: 200)
         }
     }
 
@@ -112,7 +112,17 @@ struct MainView: View {
                 }
                 .disabled(viewModel.selectedApps.isEmpty)
                 .keyboardShortcut(.delete)
+
+                Spacer()
+
+                Button(action: {
+                    openWindow(id: "settings")
+                }, label: {
+                    Image(systemName: "gearshape")
+                        .foregroundColor(.primary)
+                }).keyboardShortcut(",")
             }
+            .frame(width: 200)
         }
     }
 }
