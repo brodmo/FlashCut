@@ -10,13 +10,12 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject var viewModel = MainViewModel()
+    @Environment(\.openWindow) var openWindow
 
     var body: some View {
         HStack(spacing: 16.0) {
             appGroups
-            assignedApps
-            AppGroupConfigurationView(viewModel: viewModel)
-                .frame(maxWidth: 230)
+            rightPanel
         }
         .padding()
         .fixedSize()
@@ -26,6 +25,23 @@ struct MainView: View {
                 userInput: $viewModel.userInput,
                 isPresented: $viewModel.isInputDialogPresented
             )
+        }
+    }
+
+    private var rightPanel: some View {
+        VStack(alignment: .leading, spacing: 16.0) {
+            HStack {
+                Spacer()
+                Button(action: {
+                    openWindow(id: "settings")
+                }, label: {
+                    Image(systemName: "gearshape")
+                        .foregroundColor(.primary)
+                }).keyboardShortcut(",")
+            }
+
+            AppGroupConfigurationView(viewModel: viewModel)
+            assignedApps
         }
     }
 

@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct AppGroupConfigurationView: View {
-    @Environment(\.openWindow) var openWindow
-
     @ObservedObject var viewModel: MainViewModel
 
     var body: some View {
@@ -21,14 +19,6 @@ struct AppGroupConfigurationView: View {
                     Text("Could not migrate some apps. Please re-add them to fix the problem.")
                         .foregroundColor(.errorRed)
                 }
-
-                Spacer()
-                settingsButton
-            }
-        } else {
-            VStack {
-                Spacer()
-                settingsButton
             }
         }
     }
@@ -47,32 +37,23 @@ struct AppGroupConfigurationView: View {
             .padding(.bottom, 8)
 
             // Primary App with tooltip
-            HStack {
-                Picker("Primary App", selection: $viewModel.appGroupTargetApp) {
+            HStack(spacing: 4) {
+                Text("Primary App")
+
+                Image(systemName: "questionmark.circle")
+                    .foregroundColor(.secondary)
+                    .help("The primary app is always focused and launched if not running when activating this group")
+
+                Spacer()
+
+                Picker("", selection: $viewModel.appGroupTargetApp) {
                     ForEach(viewModel.targetAppOptions, id: \.self) {
-                        Text($0.name.padEnd(toLength: 20)).tag($0)
+                        Text($0.name).tag($0)
                     }
                 }
                 .labelsHidden()
-
-                Button(action: {}) {
-                    Image(systemName: "questionmark.circle")
-                        .foregroundColor(.secondary)
-                }
-                .buttonStyle(.plain)
-                .help("The primary app is always focused and launched if not running when activating this group")
+                .fixedSize()
             }
         }
-    }
-
-    private var settingsButton: some View {
-        HStack {
-            Button(action: {
-                openWindow(id: "settings")
-            }, label: {
-                Image(systemName: "gearshape")
-                    .foregroundColor(.primary)
-            }).keyboardShortcut(",")
-        }.frame(maxWidth: .infinity, alignment: .trailing)
     }
 }

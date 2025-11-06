@@ -9,7 +9,7 @@ import AppKit
 
 enum AppConstants {
     static let lastFocusedOption = MacApp(
-        name: "(Last Focused)",
+        name: "None",
         bundleIdentifier: "flashcut.last-focused",
         iconPath: nil
     )
