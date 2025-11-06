@@ -18,7 +18,7 @@ struct MainView: View {
             rightPanel
         }
         .padding()
-        .frame(width: 450, height: 350)
+        .frame(minWidth: 450, minHeight: 350)
         .sheet(isPresented: $viewModel.isInputDialogPresented) {
             InputDialog(
                 title: "Enter App Group name:",
@@ -32,24 +32,22 @@ struct MainView: View {
         VStack(alignment: .leading, spacing: 0) {
             if viewModel.selectedAppGroup != nil {
                 AppGroupConfigurationView(viewModel: viewModel)
-                    .frame(height: 85)
+                    .padding(.bottom, 12)
                 assignedApps
             } else {
-                VStack(alignment: .leading) {
+                Spacer()
+                HStack {
                     Spacer()
-                        .frame(width: 200, height: 250)
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            openWindow(id: "settings")
-                        }, label: {
-                            Image(systemName: "gearshape")
-                                .foregroundColor(.primary)
-                        }).keyboardShortcut(",")
-                    }
+                    Button(action: {
+                        openWindow(id: "settings")
+                    }, label: {
+                        Image(systemName: "gearshape")
+                            .foregroundColor(.primary)
+                    }).keyboardShortcut(",")
                 }
             }
         }
+        .frame(width: 200)
     }
 
     private var appGroups: some View {
@@ -65,7 +63,6 @@ struct MainView: View {
                     appGroup: $appGroup
                 )
             }
-            .frame(width: 200, height: 250)
             .tahoeBorder()
 
             HStack {
@@ -83,6 +80,7 @@ struct MainView: View {
                 Spacer()
             }
         }
+        .frame(width: 200)
     }
 
     private var assignedApps: some View {
@@ -97,7 +95,6 @@ struct MainView: View {
                     app: app
                 )
             }
-            .frame(width: 200, height: 165)
             .tahoeBorder()
 
             HStack {
@@ -122,7 +119,6 @@ struct MainView: View {
                         .foregroundColor(.primary)
                 }).keyboardShortcut(",")
             }
-            .frame(width: 200)
         }
     }
 }
