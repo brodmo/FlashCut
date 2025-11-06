@@ -7,10 +7,6 @@
 
 import Foundation
 
-extension Collection {
-    var isNotEmpty: Bool { !isEmpty }
-}
-
 extension Collection where Element: Hashable {
     var asSet: Set<Element> { Set(self) }
 }

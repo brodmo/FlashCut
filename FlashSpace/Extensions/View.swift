@@ -17,13 +17,6 @@ extension View {
     }
 
     @ViewBuilder
-    func hidden(_ isHidden: Bool) -> some View {
-        if !isHidden {
-            self
-        }
-    }
-
-    @ViewBuilder
     func tahoeBorder() -> some View {
         if #available(macOS 26.0, *) {
             self.overlay(
