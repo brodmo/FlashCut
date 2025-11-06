@@ -30,8 +30,7 @@ final class MainViewModel: ObservableObject {
         didSet { saveAppGroup() }
     }
 
-    @Published var isInputDialogPresented = false
-    @Published var userInput = ""
+    @Published var newlyCreatedAppGroupId: UUID?
 
     var targetAppOptions: [MacApp] {
         [AppConstants.lastFocusedOption] + (appGroupApps ?? [])
@@ -140,19 +139,21 @@ extension MainViewModel {
     }
 
     func addAppGroup() {
-        userInput = ""
-        isInputDialogPresented = true
+        // Find a unique name for the new app group
+        var counter = 1
+        var name = "New App Group"
+        while appGroups.contains(where: { $0.name == name }) {
+            counter += 1
+            name = "New App Group \(counter)"
+        }
 
-        $isInputDialogPresented
-            .first { !$0 }
-            .sink { [weak self] _ in
-                guard let self, !self.userInput.isEmpty else { return }
+        appGroupRepository.addAppGroup(name: name)
+        appGroups = appGroupRepository.appGroups
 
-                self.appGroupRepository.addAppGroup(name: self.userInput)
-                self.appGroups = self.appGroupRepository.appGroups
-                self.selectedAppGroup = self.appGroups.last
-            }
-            .store(in: &cancellables)
+        if let newAppGroup = appGroups.last {
+            selectedAppGroup = newAppGroup
+            newlyCreatedAppGroupId = newAppGroup.id
+        }
     }
 
     func deleteSelectedAppGroups() {

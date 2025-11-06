@@ -21,12 +21,11 @@ struct MainView: View {
         }
         .padding()
         .frame(minWidth: 450, minHeight: 350)
-        .sheet(isPresented: $viewModel.isInputDialogPresented) {
-            InputDialog(
-                title: "Enter App Group name:",
-                userInput: $viewModel.userInput,
-                isPresented: $viewModel.isInputDialogPresented
-            )
+        .onChange(of: viewModel.newlyCreatedAppGroupId) { newId in
+            if let newId {
+                editingAppGroupId = newId
+                viewModel.newlyCreatedAppGroupId = nil
+            }
         }
     }
 
