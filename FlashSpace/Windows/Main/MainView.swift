@@ -113,7 +113,6 @@ struct MainView: View {
                 .disabled(viewModel.selectedApps.isEmpty)
                 .keyboardShortcut(.delete)
             }
-            .padding(.top, 8)
         }
     }
 }
