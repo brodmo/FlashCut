@@ -77,19 +77,12 @@ struct AppGroupCell: View {
         isEditing = false
         guard let newName = editedName else { return }
         editedName = nil
+
         let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        // If empty, use a default name
         let finalName = trimmedName.isEmpty ? "(empty)" : trimmedName
-
-        // Only update if the name has changed
         guard finalName != appGroup.name else { return }
 
-        var updatedAppGroup = appGroup
-        updatedAppGroup.name = finalName
-
-        // Update both the binding and the repository
-        appGroup = updatedAppGroup
-        appGroupRepository.updateAppGroup(updatedAppGroup)
+        appGroup.name = finalName
+        appGroupRepository.updateAppGroup(appGroup)
     }
 }
