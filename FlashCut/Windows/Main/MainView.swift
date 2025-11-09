@@ -21,7 +21,7 @@ struct MainView: View {
         }
         .padding()
         .frame(minWidth: 450, minHeight: 350)
-        .onChange(of: viewModel.newlyCreatedAppGroupId) { newId in
+        .onChange(of: viewModel.newlyCreatedAppGroupId) { _, newId in
             if let newId {
                 selectedAppGroupIds = [newId]
                 editingAppGroupId = newId
@@ -71,11 +71,11 @@ struct MainView: View {
                         if selectedAppGroupIds.contains(appGroup.id) {
                             Button(action: {
                                 editingAppGroupId = appGroup.id
-                            }) {
+                            }, label: {
                                 Image(systemName: "pencil")
                                     .foregroundColor(.secondary)
                                     .font(.system(size: 11))
-                            }
+                            })
                             .buttonStyle(.plain)
                         }
                     }
@@ -85,7 +85,7 @@ struct MainView: View {
                     viewModel.appGroups.move(fromOffsets: from, toOffset: to)
                 }
             }
-            .onChange(of: selectedAppGroupIds) { newIds in
+            .onChange(of: selectedAppGroupIds) { _, newIds in
                 viewModel.selectedAppGroups = Set(viewModel.appGroups.filter { newIds.contains($0.id) })
             }
             .tahoeBorder()
