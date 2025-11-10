@@ -56,29 +56,15 @@ struct MainView: View {
         VStack(alignment: .leading) {
             List(selection: $selectedAppGroupIds) {
                 ForEach($viewModel.appGroups) { $appGroup in
-                    HStack {
-                        AppGroupCell(
-                            isEditing: Binding(
-                                get: { editingAppGroupId == appGroup.id },
-                                set: { if $0 { editingAppGroupId = appGroup.id } else { editingAppGroupId = nil } }
-                            ),
-                            selectedApps: $viewModel.selectedApps,
-                            appGroup: $appGroup
-                        )
-
-                        Spacer()
-
-                        if selectedAppGroupIds.contains(appGroup.id) {
-                            Button(action: {
-                                editingAppGroupId = appGroup.id
-                            }, label: {
-                                Image(systemName: "pencil")
-                                    .foregroundColor(.secondary)
-                                    .font(.system(size: 11))
-                            })
-                            .buttonStyle(.plain)
-                        }
-                    }
+                    AppGroupCell(
+                        isEditing: Binding(
+                            get: { editingAppGroupId == appGroup.id },
+                            set: { if $0 { editingAppGroupId = appGroup.id } else { editingAppGroupId = nil } }
+                        ),
+                        selectedApps: $viewModel.selectedApps,
+                        appGroup: $appGroup,
+                        isSelected: selectedAppGroupIds.contains(appGroup.id)
+                    )
                     .tag(appGroup.id)
                 }
                 .onMove { from, to in
@@ -87,6 +73,9 @@ struct MainView: View {
             }
             .onChange(of: selectedAppGroupIds) { _, newIds in
                 viewModel.selectedAppGroups = Set(viewModel.appGroups.filter { newIds.contains($0.id) })
+                if let editingId = editingAppGroupId, !newIds.contains(editingId) {
+                    editingAppGroupId = nil
+                }
             }
             .tahoeBorder()
 

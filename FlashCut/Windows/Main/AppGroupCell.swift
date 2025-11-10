@@ -15,16 +15,26 @@ struct AppGroupCell: View {
     @FocusState private var isTextFieldFocused: Bool
     @Binding var selectedApps: Set<MacApp>
     @Binding var appGroup: AppGroup
+    let isSelected: Bool
 
     let appGroupManager: AppGroupManager = AppDependencies.shared.appGroupManager
     let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
 
     var body: some View {
-        Group {
+        HStack {
             if isEditing {
                 editingName
             } else {
-                staticName
+                Text(appGroup.name).lineLimit(1)
+                    .foregroundColor(
+                        isTargeted || appGroup.apps.contains(where: \.bundleIdentifier.isEmpty)
+                            ? .errorRed
+                            : .primary
+                    )
+            }
+            Spacer()
+            if isSelected {
+                editButton
             }
         }
         .contentShape(Rectangle())
@@ -48,14 +58,14 @@ struct AppGroupCell: View {
             }
             .onSubmit {
                 isEditing = false
-                guard let newName = editedName else { return }
+                let newName = editedName
                 editedName = nil
+                guard let newName else { return }
 
                 let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let finalName = trimmedName.isEmpty ? "(empty)" : trimmedName
-                guard finalName != appGroup.name else { return }
+                guard !trimmedName.isEmpty, trimmedName != appGroup.name else { return }
 
-                appGroup.name = finalName
+                appGroup.name = trimmedName
                 appGroupRepository.updateAppGroup(appGroup)
             }
             .onExitCommand {
@@ -64,15 +74,15 @@ struct AppGroupCell: View {
             }
     }
 
-    private var staticName: some View {
-        Text(appGroup.name)
-            .lineLimit(1)
-            .frame(alignment: .leading)
-            .foregroundColor(
-                isTargeted || appGroup.apps.contains(where: \.bundleIdentifier.isEmpty)
-                    ? .errorRed
-                    : .primary
-            )
+    private var editButton: some View {
+        Button(action: {
+            isEditing = true
+        }, label: {
+            Image(systemName: "pencil")
+                .foregroundColor(.secondary)
+                .font(.system(size: 11))
+        })
+        .buttonStyle(.plain)
     }
 
     private func handleDrop(_ apps: [MacAppWithAppGroup], _ _: CGPoint) -> Bool {
