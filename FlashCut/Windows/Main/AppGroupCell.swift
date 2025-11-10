@@ -19,29 +19,35 @@ struct AppGroupCell: View {
     let appGroupManager: AppGroupManager = AppDependencies.shared.appGroupManager
     let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
 
-    var isEditing: Bool {
-        viewModel.editingAppGroupId == appGroup.id
-    }
-
     var body: some View {
         HStack {
-            if isEditing {
-                editingName
-            } else {
-                Text(appGroup.name).lineLimit(1)
-                    .foregroundColor(
-                        isTargeted || appGroup.apps.contains(where: \.bundleIdentifier.isEmpty)
-                            ? .errorRed
-                            : .primary
-                    )
-            }
+            nameField
             Spacer()
             if isSelected {
                 editButton
             }
         }
-        .onChange(of: isEditing) { _, newValue in
-            editedName = newValue ? appGroup.name : ""
+        .onAppear {
+            editedName = appGroup.name
+            if viewModel.editingAppGroupId == appGroup.id {
+                isTextFieldFocused = true
+            }
+        }
+        .onChange(of: isTextFieldFocused) { _, isFocused in
+            if isFocused {
+                editedName = appGroup.name
+                viewModel.editingAppGroupId = appGroup.id
+            } else {
+                if viewModel.editingAppGroupId == appGroup.id {
+                    viewModel.editingAppGroupId = nil
+                }
+                editedName = appGroup.name
+            }
+        }
+        .onChange(of: appGroup.name) { _, newValue in
+            if !isTextFieldFocused {
+                editedName = newValue
+            }
         }
         .contentShape(Rectangle())
         .dropDestination(
@@ -51,29 +57,32 @@ struct AppGroupCell: View {
         )
     }
 
-    private var editingName: some View {
+    private var nameField: some View {
         TextField("Name", text: $editedName)
             .textFieldStyle(.plain)
+            .lineLimit(1)
             .focused($isTextFieldFocused)
-            .onAppear {
-                isTextFieldFocused = true
-            }
+            .foregroundColor(
+                isTargeted || appGroup.apps.contains(where: \.bundleIdentifier.isEmpty)
+                    ? .errorRed
+                    : .primary
+            )
             .onSubmit {
-                viewModel.editingAppGroupId = nil
+                isTextFieldFocused = false
                 let trimmedName = editedName.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !trimmedName.isEmpty, trimmedName != appGroup.name else { return }
-
-                appGroup.name = trimmedName
+                let finalName = trimmedName.isEmpty ? "(empty)" : trimmedName
+                guard finalName != appGroup.name else { return }
+                appGroup.name = finalName
                 appGroupRepository.updateAppGroup(appGroup)
             }
             .onExitCommand {
-                viewModel.editingAppGroupId = nil
+                isTextFieldFocused = false
             }
     }
 
     private var editButton: some View {
         Button(action: {
-            viewModel.editingAppGroupId = appGroup.id
+            isTextFieldFocused = true
         }, label: {
             Image(systemName: "pencil")
                 .foregroundColor(.secondary)
