@@ -6,6 +6,7 @@ struct AppGroupCell: View {
     @State var visibleName: String = ""
     @FocusState private var isEditing: Bool
     @Binding var appGroup: AppGroup
+    let isSelected: Bool
 
     let appGroupManager: AppGroupManager = AppDependencies.shared.appGroupManager
     let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
@@ -49,20 +50,20 @@ struct AppGroupCell: View {
             }
     }
 
-    @ViewBuilder
     private var editButton: some View {
-        var isSelected = viewModel.selectedAppGroupIds.contains(appGroup.id)
-        if isSelected, !isEditing {
-            Button(action: {
-                viewModel.editingAppGroupId = appGroup.id
-                isEditing = true
-            }, label: {
-                Image(systemName: "pencil")
-                    .foregroundColor(.secondary)
-                    .font(.system(size: 11))
-            })
-            .buttonStyle(.plain)
-        }
+        let isVisible = isSelected && !isEditing
+
+        return Button(action: {
+            viewModel.editingAppGroupId = appGroup.id
+            isEditing = true
+        }, label: {
+            Image(systemName: "pencil")
+                .foregroundColor(.secondary)
+                .font(.system(size: 11))
+        })
+        .buttonStyle(.plain)
+        .opacity(isVisible ? 1 : 0)
+        .allowsHitTesting(isVisible)
     }
 
     private func handleDrop(_ apps: [MacAppWithAppGroup], _ _: CGPoint) -> Bool {

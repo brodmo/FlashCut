@@ -16,11 +16,19 @@ final class MainViewModel: ObservableObject {
 
     @Published var appGroupName = ""
     @Published var appGroupShortcut: AppHotKey? {
-        didSet { saveAppGroup() }
+        didSet {
+            if let currentlyLoadedGroupId {
+                saveAppGroup(id: currentlyLoadedGroupId)
+            }
+        }
     }
 
     @Published var appGroupTargetApp: MacApp? = AppConstants.lastFocusedOption {
-        didSet { saveAppGroup() }
+        didSet {
+            if let currentlyLoadedGroupId {
+                saveAppGroup(id: currentlyLoadedGroupId)
+            }
+        }
     }
 
     @Published var newlyCreatedAppGroupId: UUID?
@@ -30,43 +38,13 @@ final class MainViewModel: ObservableObject {
         [AppConstants.lastFocusedOption] + (appGroupApps ?? [])
     }
 
-    var selectedApps: Set<MacApp> = [] {
-        didSet {
-            // To avoid warnings
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [self] in
-                objectWillChange.send()
-            }
-        }
-    }
+    @Published var selectedApps: Set<MacApp> = []
 
-    @Published var selectedAppGroupIds: Set<UUID> = [] {
-        didSet {
-            selectedAppGroup = selectedAppGroupIds.count == 1
-                ? appGroups.first(where: { selectedAppGroupIds.contains($0.id) })
-                : nil
+    private var currentlyLoadedGroupId: UUID?
 
-            // To avoid warnings
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [self] in
-                if selectedAppGroupIds.count == 1,
-                   selectedAppGroupIds.first != oldValue.first {
-                    selectedApps = []
-                } else if selectedAppGroupIds.count != 1 {
-                    selectedApps = []
-                }
-                objectWillChange.send()
-            }
-        }
-    }
-
-    private(set) var selectedAppGroup: AppGroup? {
-        didSet {
-            guard selectedAppGroup != oldValue else { return }
-
-            // To avoid warnings
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.updateSelectedAppGroup()
-            }
-        }
+    func getSelectedAppGroup(id: UUID?) -> AppGroup? {
+        guard let id else { return nil }
+        return appGroups.first(where: { $0.id == id })
     }
 
     private var cancellables: Set<AnyCancellable> = []
@@ -88,31 +66,27 @@ final class MainViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    private func updateSelectedAppGroup() {
+    func loadSelectedAppGroup(id: UUID?) {
         loadingAppGroup = true
         defer { loadingAppGroup = false }
 
+        currentlyLoadedGroupId = id
+        let selectedAppGroup = getSelectedAppGroup(id: id)
         appGroupName = selectedAppGroup?.name ?? ""
         appGroupShortcut = selectedAppGroup?.activateShortcut
         appGroupApps = selectedAppGroup?.apps
         appGroupTargetApp = selectedAppGroup?.targetApp ?? AppConstants.lastFocusedOption
-        selectedAppGroup.flatMap { selectedAppGroupIds = [$0.id] }
     }
 
     private func reloadAppGroups() {
         appGroups = appGroupRepository.appGroups
-        if let selectedAppGroup, let appGroup = appGroupRepository.findAppGroup(with: selectedAppGroup.id) {
-            selectedAppGroupIds = [appGroup.id]
-        } else {
-            selectedAppGroupIds = []
-        }
         selectedApps = []
     }
 }
 
 extension MainViewModel {
-    func saveAppGroup() {
-        guard let selectedAppGroup, !loadingAppGroup else { return }
+    func saveAppGroup(id: UUID) {
+        guard let selectedAppGroup = getSelectedAppGroup(id: id), !loadingAppGroup else { return }
 
         if appGroupName.trimmingCharacters(in: .whitespaces).isEmpty {
             appGroupName = "(empty)"
@@ -129,10 +103,10 @@ extension MainViewModel {
 
         appGroupRepository.updateAppGroup(updatedAppGroup)
         appGroups = appGroupRepository.appGroups
-        self.selectedAppGroup = appGroupRepository.findAppGroup(with: selectedAppGroup.id)
+        // selectedAppGroup is now computed, no need to update
     }
 
-    func addAppGroup() {
+    func addAppGroup() -> UUID? {
         // Find a unique name for the new app group
         var counter = 1
         var name = "New App Group"
@@ -145,22 +119,22 @@ extension MainViewModel {
         appGroups = appGroupRepository.appGroups
 
         if let newAppGroup = appGroups.last {
-            selectedAppGroup = newAppGroup
             editingAppGroupId = newAppGroup.id
             newlyCreatedAppGroupId = newAppGroup.id
+            return newAppGroup.id
         }
+        return nil
     }
 
-    func deleteSelectedAppGroups() {
-        guard !selectedAppGroupIds.isEmpty else { return }
+    func deleteAppGroups(ids: Set<UUID>) {
+        guard !ids.isEmpty else { return }
 
-        appGroupRepository.deleteAppGroups(ids: selectedAppGroupIds)
+        appGroupRepository.deleteAppGroups(ids: ids)
         appGroups = appGroupRepository.appGroups
-        selectedAppGroupIds = []
     }
 
-    func addApp() {
-        guard let selectedAppGroup else { return }
+    func addApp(toGroupId groupId: UUID) {
+        guard let selectedAppGroup = getSelectedAppGroup(id: groupId) else { return }
 
         let fileChooser = FileChooser()
         let appUrl = fileChooser.runModalOpenPanel(
@@ -195,13 +169,13 @@ extension MainViewModel {
         )
 
         appGroups = appGroupRepository.appGroups
-        self.selectedAppGroup = appGroupRepository.findAppGroup(with: selectedAppGroup.id)
+        // selectedAppGroup is now computed, no need to update
 
         appGroupManager.activateAppGroupIfActive(selectedAppGroup.id)
     }
 
-    func deleteSelectedApps() {
-        guard let selectedAppGroup, !selectedApps.isEmpty else { return }
+    func deleteSelectedApps(fromGroupId groupId: UUID) {
+        guard let selectedAppGroup = getSelectedAppGroup(id: groupId), !selectedApps.isEmpty else { return }
 
         let selectedApps = Array(selectedApps)
 
@@ -214,8 +188,8 @@ extension MainViewModel {
         }
 
         appGroups = appGroupRepository.appGroups
-        self.selectedAppGroup = appGroupRepository.findAppGroup(with: selectedAppGroup.id)
-        appGroupApps = self.selectedAppGroup?.apps
+        // selectedAppGroup is now computed, no need to update
+        appGroupApps = selectedAppGroup.apps
         self.selectedApps = []
 
         appGroupManager.activateAppGroupIfActive(selectedAppGroup.id)

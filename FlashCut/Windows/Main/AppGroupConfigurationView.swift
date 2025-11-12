@@ -5,14 +5,12 @@ struct AppGroupConfigurationView: View {
     @ObservedObject var viewModel: MainViewModel
 
     var body: some View {
-        if viewModel.selectedAppGroup != nil {
-            VStack(alignment: .leading, spacing: 0.0) {
-                configuration
+        VStack(alignment: .leading, spacing: 0.0) {
+            configuration
 
-                if viewModel.appGroups.contains(where: { $0.apps.contains(where: \.bundleIdentifier.isEmpty) }) {
-                    Text("Could not migrate some apps. Please re-add them to fix the problem.")
-                        .foregroundColor(.errorRed)
-                }
+            if viewModel.appGroups.contains(where: { $0.apps.contains(where: \.bundleIdentifier.isEmpty) }) {
+                Text("Could not migrate some apps. Please re-add them to fix the problem.")
+                    .foregroundColor(.errorRed)
             }
         }
     }

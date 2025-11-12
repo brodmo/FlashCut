@@ -4,6 +4,12 @@ import SwiftUI
 struct MainView: View {
     @StateObject var viewModel = MainViewModel()
     @Environment(\.openWindow) var openWindow
+    @State private var selectedAppGroupIds: Set<UUID> = []
+
+    private var selectedAppGroup: AppGroup? {
+        guard selectedAppGroupIds.count == 1, let id = selectedAppGroupIds.first else { return nil }
+        return viewModel.getSelectedAppGroup(id: id)
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 16.0) {
@@ -14,7 +20,7 @@ struct MainView: View {
         .frame(minWidth: 450, minHeight: 350)
         .onChange(of: viewModel.newlyCreatedAppGroupId) { _, newId in
             if let newId {
-                viewModel.selectedAppGroupIds = [newId]
+                selectedAppGroupIds = [newId]
                 viewModel.newlyCreatedAppGroupId = nil
             }
         }
@@ -22,7 +28,7 @@ struct MainView: View {
 
     private var rightPanel: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if viewModel.selectedAppGroup != nil {
+            if selectedAppGroup != nil {
                 AppGroupConfigurationView(viewModel: viewModel)
                     .padding(.bottom, 12)
                 assignedApps
@@ -44,11 +50,12 @@ struct MainView: View {
 
     private var appGroups: some View {
         VStack(alignment: .leading) {
-            List(selection: $viewModel.selectedAppGroupIds) {
+            List(selection: $selectedAppGroupIds) {
                 ForEach($viewModel.appGroups) { $appGroup in
                     AppGroupCell(
                         viewModel: viewModel,
-                        appGroup: $appGroup
+                        appGroup: $appGroup,
+                        isSelected: selectedAppGroupIds.count == 1 && selectedAppGroupIds.contains(appGroup.id)
                     )
                     .tag(appGroup.id)
                 }
@@ -56,25 +63,43 @@ struct MainView: View {
                     viewModel.appGroups.move(fromOffsets: from, toOffset: to)
                 }
             }
-            .onChange(of: viewModel.selectedAppGroupIds) { _, newIds in
+            .onChange(of: selectedAppGroupIds) { oldIds, newIds in
                 // Clear editing if the edited group is no longer selected
                 if let editingId = viewModel.editingAppGroupId, !newIds.contains(editingId) {
                     viewModel.editingAppGroupId = nil
+                }
+
+                // Clear app selection when group selection changes
+                if newIds.count != 1 {
+                    viewModel.selectedApps = []
+                }
+
+                // Load form fields when a single group is selected
+                if newIds.count == 1, let selectedId = newIds.first, selectedId != oldIds.first {
+                    viewModel.selectedApps = []
+                    viewModel.loadSelectedAppGroup(id: selectedId)
                 }
             }
             .tahoeBorder()
 
             HStack {
-                Button(action: viewModel.addAppGroup) {
+                Button(action: {
+                    if let newId = viewModel.addAppGroup() {
+                        selectedAppGroupIds = [newId]
+                    }
+                }) {
                     Image(systemName: "plus")
                         .frame(height: 16)
                 }
 
-                Button(action: viewModel.deleteSelectedAppGroups) {
+                Button(action: {
+                    viewModel.deleteAppGroups(ids: selectedAppGroupIds)
+                    selectedAppGroupIds = []
+                }) {
                     Image(systemName: "trash")
                         .frame(height: 16)
                 }
-                .disabled(viewModel.selectedAppGroupIds.isEmpty)
+                .disabled(selectedAppGroupIds.isEmpty)
 
                 Spacer()
             }
@@ -90,19 +115,27 @@ struct MainView: View {
                 selection: $viewModel.selectedApps
             ) { app in
                 AppCell(
-                    appGroupId: viewModel.selectedAppGroup?.id ?? UUID(),
+                    appGroupId: selectedAppGroup?.id ?? UUID(),
                     app: app
                 )
             }
             .tahoeBorder()
 
             HStack {
-                Button(action: viewModel.addApp) {
+                Button(action: {
+                    if let groupId = selectedAppGroup?.id {
+                        viewModel.addApp(toGroupId: groupId)
+                    }
+                }) {
                     Image(systemName: "plus")
                         .frame(height: 16)
-                }.disabled(viewModel.selectedAppGroup == nil)
+                }.disabled(selectedAppGroup == nil)
 
-                Button(action: viewModel.deleteSelectedApps) {
+                Button(action: {
+                    if let groupId = selectedAppGroup?.id {
+                        viewModel.deleteSelectedApps(fromGroupId: groupId)
+                    }
+                }) {
                     Image(systemName: "trash")
                         .frame(height: 16)
                 }
