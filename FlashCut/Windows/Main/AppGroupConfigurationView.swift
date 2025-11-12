@@ -2,18 +2,41 @@ import AppKit
 import SwiftUI
 
 struct AppGroupConfigurationView: View {
-    @ObservedObject var viewModel: MainViewModel
+    @Binding var appGroup: AppGroup
     let apps: [MacApp]
+
+    private let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
 
     private var targetAppOptions: [MacApp] {
         [AppConstants.lastFocusedOption] + apps
+    }
+
+    private var shortcutBinding: Binding<AppHotKey?> {
+        Binding(
+            get: { appGroup.activateShortcut },
+            set: { newValue in
+                appGroup.activateShortcut = newValue
+                appGroupRepository.updateAppGroup(appGroup)
+            }
+        )
+    }
+
+    private var targetAppBinding: Binding<MacApp?> {
+        Binding(
+            get: { appGroup.targetApp ?? AppConstants.lastFocusedOption },
+            set: { newValue in
+                appGroup.targetApp = newValue == AppConstants.lastFocusedOption ? nil : newValue
+                appGroup.openAppsOnActivation = newValue == AppConstants.lastFocusedOption ? nil : true
+                appGroupRepository.updateAppGroup(appGroup)
+            }
+        )
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0.0) {
             configuration
 
-            if viewModel.appGroups.contains(where: { $0.apps.contains(where: \.bundleIdentifier.isEmpty) }) {
+            if appGroup.apps.contains(where: \.bundleIdentifier.isEmpty) {
                 Text("Could not migrate some apps. Please re-add them to fix the problem.")
                     .foregroundColor(.errorRed)
             }
@@ -23,7 +46,7 @@ struct AppGroupConfigurationView: View {
     private var configuration: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Shortcut
-            HotKeyControl(shortcut: $viewModel.appGroupShortcut)
+            HotKeyControl(shortcut: shortcutBinding)
 
             Spacer()
                 .frame(height: 16)
@@ -38,7 +61,7 @@ struct AppGroupConfigurationView: View {
 
                 Spacer()
 
-                Picker("", selection: $viewModel.appGroupTargetApp) {
+                Picker("", selection: targetAppBinding) {
                     ForEach(targetAppOptions, id: \.self) { app in
                         Text(app.name)
                             .lineLimit(1)

@@ -12,32 +12,12 @@ final class MainViewModel: ObservableObject {
         }
     }
 
-    @Published var appGroupName = ""
-    @Published var appGroupShortcut: AppHotKey? {
-        didSet {
-            if let currentlyLoadedGroupId {
-                saveAppGroup(id: currentlyLoadedGroupId)
-            }
-        }
-    }
-
-    @Published var appGroupTargetApp: MacApp? = AppConstants.lastFocusedOption {
-        didSet {
-            if let currentlyLoadedGroupId {
-                saveAppGroup(id: currentlyLoadedGroupId)
-            }
-        }
-    }
-
-    private var currentlyLoadedGroupId: UUID?
-
-    func getSelectedAppGroup(id: UUID?) -> AppGroup? {
+    func getAppGroup(id: UUID?) -> AppGroup? {
         guard let id else { return nil }
         return appGroups.first(where: { $0.id == id })
     }
 
     private var cancellables: Set<AnyCancellable> = []
-    private var loadingAppGroup = false
 
     private let appGroupManager = AppDependencies.shared.appGroupManager
     private let appGroupRepository = AppDependencies.shared.appGroupRepository
@@ -55,44 +35,12 @@ final class MainViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    func loadSelectedAppGroup(id: UUID?) {
-        loadingAppGroup = true
-        defer { loadingAppGroup = false }
-
-        currentlyLoadedGroupId = id
-        let selectedAppGroup = getSelectedAppGroup(id: id)
-        appGroupName = selectedAppGroup?.name ?? ""
-        appGroupShortcut = selectedAppGroup?.activateShortcut
-        appGroupTargetApp = selectedAppGroup?.targetApp ?? AppConstants.lastFocusedOption
-    }
-
     private func reloadAppGroups() {
         appGroups = appGroupRepository.appGroups
     }
 }
 
 extension MainViewModel {
-    func saveAppGroup(id: UUID) {
-        guard let selectedAppGroup = getSelectedAppGroup(id: id), !loadingAppGroup else { return }
-
-        if appGroupName.trimmingCharacters(in: .whitespaces).isEmpty {
-            appGroupName = "(empty)"
-        }
-
-        let updatedAppGroup = AppGroup(
-            id: selectedAppGroup.id,
-            name: appGroupName,
-            activateShortcut: appGroupShortcut,
-            apps: selectedAppGroup.apps,
-            targetApp: appGroupTargetApp == AppConstants.lastFocusedOption ? nil : appGroupTargetApp,
-            openAppsOnActivation: appGroupTargetApp == AppConstants.lastFocusedOption ? nil : true
-        )
-
-        appGroupRepository.updateAppGroup(updatedAppGroup)
-        appGroups = appGroupRepository.appGroups
-        // selectedAppGroup is now computed, no need to update
-    }
-
     func addAppGroup() -> UUID? {
         // Find a unique name for the new app group
         var counter = 1
@@ -119,7 +67,7 @@ extension MainViewModel {
     }
 
     func addApp(toGroupId groupId: UUID) {
-        guard let selectedAppGroup = getSelectedAppGroup(id: groupId) else { return }
+        guard let selectedAppGroup = getAppGroup(id: groupId) else { return }
 
         let fileChooser = FileChooser()
         let appUrl = fileChooser.runModalOpenPanel(
@@ -159,7 +107,7 @@ extension MainViewModel {
     }
 
     func deleteApps(_ apps: Set<MacApp>, fromGroupId groupId: UUID) {
-        guard let selectedAppGroup = getSelectedAppGroup(id: groupId), !apps.isEmpty else { return }
+        guard let selectedAppGroup = getAppGroup(id: groupId), !apps.isEmpty else { return }
 
         let appsArray = Array(apps)
 

@@ -13,8 +13,12 @@ struct MainView: View {
         return id
     }
 
+    private var currentAppGroup: AppGroup? {
+        viewModel.getAppGroup(id: currentAppGroupId)
+    }
+
     private var currentApps: [MacApp] {
-        viewModel.getSelectedAppGroup(id: currentAppGroupId)?.apps ?? []
+        currentAppGroup?.apps ?? []
     }
 
     var body: some View {
@@ -28,9 +32,9 @@ struct MainView: View {
 
     private var rightPanel: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if currentAppGroupId != nil {
+            if let appGroup = currentAppGroup {
                 AppGroupConfigurationView(
-                    viewModel: viewModel,
+                    appGroup: .constant(appGroup),
                     apps: currentApps
                 )
                 .padding(.bottom, 12)
@@ -73,10 +77,9 @@ struct MainView: View {
                     selectedApps = []
                 }
 
-                // Load form fields when a single group is selected
+                // Clear app selection when a new group is selected
                 if newIds.count == 1, let selectedId = newIds.first, selectedId != oldIds.first {
                     selectedApps = []
-                    viewModel.loadSelectedAppGroup(id: selectedId)
                 }
             }
             .tahoeBorder()
