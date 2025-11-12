@@ -10,7 +10,6 @@ import UniformTypeIdentifiers
 
 struct AppGroupCell: View {
     @ObservedObject var viewModel: MainViewModel
-    @State var isTargeted = false
     @State var visibleName: String = ""
     @FocusState private var isEditing: Bool
     @Binding var appGroup: AppGroup
@@ -22,26 +21,14 @@ struct AppGroupCell: View {
     var body: some View {
         HStack(spacing: 4) {
             nameField
-            if isSelected, !isEditing {
-                editButton
-            }
+            editButton
             Spacer() // Make sure the drop target extends all the way
         }
         .contentShape(Rectangle())
-        .foregroundColor(
+        .foregroundColor( // broken app indication
             appGroup.apps.contains(where: \.bundleIdentifier.isEmpty) ? .errorRed : .primary
         )
-        .listRowBackground(
-            RoundedRectangle(cornerRadius: 6)
-                .fill(Color.accentColor.opacity(0.2))
-                .padding(.horizontal, 10) // Match list selection
-                .opacity(isTargeted ? 1 : 0)
-        )
-        .dropDestination(
-            for: MacAppWithAppGroup.self,
-            action: handleDrop,
-            isTargeted: { isTargeted = $0 }
-        )
+        .modifier(AppGroupDropModifier(handleDrop: handleDrop))
     }
 
     private var nameField: some View {
@@ -71,15 +58,18 @@ struct AppGroupCell: View {
             }
     }
 
+    @ViewBuilder
     private var editButton: some View {
-        Button(action: {
-            isEditing = true
-        }, label: {
-            Image(systemName: "pencil")
-                .foregroundColor(.secondary)
-                .font(.system(size: 11))
-        })
-        .buttonStyle(.plain)
+        if isSelected, !isEditing {
+            Button(action: {
+                isEditing = true
+            }, label: {
+                Image(systemName: "pencil")
+                    .foregroundColor(.secondary)
+                    .font(.system(size: 11))
+            })
+            .buttonStyle(.plain)
+        }
     }
 
     private func handleDrop(_ apps: [MacAppWithAppGroup], _ _: CGPoint) -> Bool {
@@ -97,5 +87,26 @@ struct AppGroupCell: View {
         appGroupManager.activateAppGroupIfActive(appGroup.id)
 
         return true
+    }
+}
+
+struct AppGroupDropModifier: ViewModifier {
+    let handleDrop: ([MacAppWithAppGroup], CGPoint) -> Bool
+    @State var isTargeted: Bool = false
+
+    func body(content: Content) -> some View {
+        content
+            .contentShape(Rectangle())
+            .dropDestination(
+                for: MacAppWithAppGroup.self,
+                action: handleDrop,
+                isTargeted: { isTargeted = $0 }
+            )
+            .listRowBackground(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color.accentColor.opacity(0.2))
+                    .padding(.horizontal, 10) // match list selection styling
+                    .opacity(isTargeted ? 1 : 0)
+            )
     }
 }
