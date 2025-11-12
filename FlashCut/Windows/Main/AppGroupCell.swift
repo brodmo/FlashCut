@@ -83,7 +83,8 @@ struct AppGroupCell: View {
     }
 
     private func handleDrop(_ apps: [MacAppWithAppGroup], _ _: CGPoint) -> Bool {
-        guard let sourceAppGroupId = apps.first?.appGroupId else { return false }
+        guard let sourceAppGroupId = apps.first?.appGroupId,
+              sourceAppGroupId != appGroup.id else { return false }
 
         appGroupRepository.moveApps(
             apps.map(\.app),
