@@ -28,25 +28,13 @@ struct AppGroupCell: View {
         }
         .onAppear {
             editedName = appGroup.name
+            // new app group cell must be focused immediately
             if viewModel.editingAppGroupId == appGroup.id {
                 isTextFieldFocused = true
             }
         }
         .onChange(of: isTextFieldFocused) { _, isFocused in
-            if isFocused {
-                editedName = appGroup.name
-                viewModel.editingAppGroupId = appGroup.id
-            } else {
-                if viewModel.editingAppGroupId == appGroup.id {
-                    viewModel.editingAppGroupId = nil
-                }
-                editedName = appGroup.name
-            }
-        }
-        .onChange(of: appGroup.name) { _, newValue in
-            if !isTextFieldFocused {
-                editedName = newValue
-            }
+            viewModel.editingAppGroupId = isFocused ? appGroup.id : nil
         }
         .contentShape(Rectangle())
         .dropDestination(
@@ -73,6 +61,7 @@ struct AppGroupCell: View {
                 guard finalName != appGroup.name else { return }
                 appGroup.name = finalName
                 appGroupRepository.updateAppGroup(appGroup)
+                editedName = finalName
             }
     }
 
