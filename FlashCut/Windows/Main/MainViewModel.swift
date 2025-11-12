@@ -12,8 +12,6 @@ final class MainViewModel: ObservableObject {
         }
     }
 
-    @Published var appGroupApps: [MacApp]?
-
     @Published var appGroupName = ""
     @Published var appGroupShortcut: AppHotKey? {
         didSet {
@@ -37,8 +35,6 @@ final class MainViewModel: ObservableObject {
     var targetAppOptions: [MacApp] {
         [AppConstants.lastFocusedOption] + (appGroupApps ?? [])
     }
-
-    @Published var selectedApps: Set<MacApp> = []
 
     private var currentlyLoadedGroupId: UUID?
 
@@ -74,13 +70,11 @@ final class MainViewModel: ObservableObject {
         let selectedAppGroup = getSelectedAppGroup(id: id)
         appGroupName = selectedAppGroup?.name ?? ""
         appGroupShortcut = selectedAppGroup?.activateShortcut
-        appGroupApps = selectedAppGroup?.apps
         appGroupTargetApp = selectedAppGroup?.targetApp ?? AppConstants.lastFocusedOption
     }
 
     private func reloadAppGroups() {
         appGroups = appGroupRepository.appGroups
-        selectedApps = []
     }
 }
 
@@ -169,28 +163,24 @@ extension MainViewModel {
         )
 
         appGroups = appGroupRepository.appGroups
-        // selectedAppGroup is now computed, no need to update
 
         appGroupManager.activateAppGroupIfActive(selectedAppGroup.id)
     }
 
-    func deleteSelectedApps(fromGroupId groupId: UUID) {
-        guard let selectedAppGroup = getSelectedAppGroup(id: groupId), !selectedApps.isEmpty else { return }
+    func deleteApps(_ apps: Set<MacApp>, fromGroupId groupId: UUID) {
+        guard let selectedAppGroup = getSelectedAppGroup(id: groupId), !apps.isEmpty else { return }
 
-        let selectedApps = Array(selectedApps)
+        let appsArray = Array(apps)
 
-        for app in selectedApps {
+        for app in appsArray {
             appGroupRepository.deleteApp(
                 from: selectedAppGroup.id,
                 app: app,
-                notify: app == selectedApps.last
+                notify: app == appsArray.last
             )
         }
 
         appGroups = appGroupRepository.appGroups
-        // selectedAppGroup is now computed, no need to update
-        appGroupApps = selectedAppGroup.apps
-        self.selectedApps = []
 
         appGroupManager.activateAppGroupIfActive(selectedAppGroup.id)
     }

@@ -75,7 +75,6 @@ struct AppGroupCell: View {
             from: sourceAppGroupId,
             to: appGroup.id
         )
-        viewModel.selectedApps = []
 
         appGroupManager.activateAppGroupIfActive(sourceAppGroupId)
         appGroupManager.activateAppGroupIfActive(appGroup.id)

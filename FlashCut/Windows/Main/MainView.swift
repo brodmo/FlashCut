@@ -5,6 +5,7 @@ struct MainView: View {
     @StateObject var viewModel = MainViewModel()
     @Environment(\.openWindow) var openWindow
     @State private var selectedAppGroupIds: Set<UUID> = []
+    @State private var selectedApps: Set<MacApp> = []
 
     private var selectedAppGroup: AppGroup? {
         guard selectedAppGroupIds.count == 1, let id = selectedAppGroupIds.first else { return nil }
@@ -71,12 +72,12 @@ struct MainView: View {
 
                 // Clear app selection when group selection changes
                 if newIds.count != 1 {
-                    viewModel.selectedApps = []
+                    selectedApps = []
                 }
 
                 // Load form fields when a single group is selected
                 if newIds.count == 1, let selectedId = newIds.first, selectedId != oldIds.first {
-                    viewModel.selectedApps = []
+                    selectedApps = []
                     viewModel.loadSelectedAppGroup(id: selectedId)
                 }
             }
@@ -112,7 +113,7 @@ struct MainView: View {
             List(
                 viewModel.appGroupApps ?? [],
                 id: \.self,
-                selection: $viewModel.selectedApps
+                selection: $selectedApps
             ) { app in
                 AppCell(
                     appGroupId: selectedAppGroup?.id ?? UUID(),
@@ -133,13 +134,14 @@ struct MainView: View {
 
                 Button(action: {
                     if let groupId = selectedAppGroup?.id {
-                        viewModel.deleteSelectedApps(fromGroupId: groupId)
+                        viewModel.deleteApps(selectedApps, fromGroupId: groupId)
+                        selectedApps = []
                     }
                 }) {
                     Image(systemName: "trash")
                         .frame(height: 16)
                 }
-                .disabled(viewModel.selectedApps.isEmpty)
+                .disabled(selectedApps.isEmpty)
                 .keyboardShortcut(.delete)
 
                 Spacer()
