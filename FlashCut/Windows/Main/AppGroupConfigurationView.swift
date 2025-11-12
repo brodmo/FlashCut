@@ -3,6 +3,11 @@ import SwiftUI
 
 struct AppGroupConfigurationView: View {
     @ObservedObject var viewModel: MainViewModel
+    let apps: [MacApp]
+
+    private var targetAppOptions: [MacApp] {
+        [AppConstants.lastFocusedOption] + apps
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0.0) {
@@ -34,7 +39,7 @@ struct AppGroupConfigurationView: View {
                 Spacer()
 
                 Picker("", selection: $viewModel.appGroupTargetApp) {
-                    ForEach(viewModel.targetAppOptions, id: \.self) { app in
+                    ForEach(targetAppOptions, id: \.self) { app in
                         Text(app.name)
                             .lineLimit(1)
                             .truncationMode(.tail)

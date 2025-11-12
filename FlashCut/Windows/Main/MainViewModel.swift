@@ -32,10 +32,6 @@ final class MainViewModel: ObservableObject {
     @Published var newlyCreatedAppGroupId: UUID?
     @Published var editingAppGroupId: UUID?
 
-    var targetAppOptions: [MacApp] {
-        [AppConstants.lastFocusedOption] + (appGroupApps ?? [])
-    }
-
     private var currentlyLoadedGroupId: UUID?
 
     func getSelectedAppGroup(id: UUID?) -> AppGroup? {

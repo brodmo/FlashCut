@@ -29,9 +29,12 @@ struct MainView: View {
 
     private var rightPanel: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if selectedAppGroup != nil {
-                AppGroupConfigurationView(viewModel: viewModel)
-                    .padding(.bottom, 12)
+            if let selectedAppGroup {
+                AppGroupConfigurationView(
+                    viewModel: viewModel,
+                    apps: selectedAppGroup.apps
+                )
+                .padding(.bottom, 12)
                 assignedApps
             } else {
                 Spacer()
@@ -111,7 +114,7 @@ struct MainView: View {
     private var assignedApps: some View {
         VStack(alignment: .leading) {
             List(
-                viewModel.appGroupApps ?? [],
+                selectedAppGroup?.apps ?? [],
                 id: \.self,
                 selection: $selectedApps
             ) { app in
