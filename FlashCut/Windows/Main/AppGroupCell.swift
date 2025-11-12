@@ -15,9 +15,7 @@ struct AppGroupCell: View {
         HStack(spacing: 4) {
             nameField
             editButton
-            Spacer() // Make sure the drop target extends all the way
         }
-        .contentShape(Rectangle())
         .foregroundColor( // broken app indication
             appGroup.apps.contains(where: \.bundleIdentifier.isEmpty) ? .errorRed : .primary
         )
@@ -37,9 +35,10 @@ struct AppGroupCell: View {
                     isEditing = true
                 }
             }
-            // isEditing is set to false automatically when edit is finished
-            .onChange(of: isEditing) { _, isFocused in
-                viewModel.editingAppGroupId = isFocused ? appGroup.id : nil
+            .onChange(of: isEditing) { _, value in
+                if !value { // isEditing is set to false automatically when edit is finished
+                    viewModel.editingAppGroupId = nil
+                }
             }
             .onSubmit {
                 let trimmedName = visibleName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -55,6 +54,7 @@ struct AppGroupCell: View {
     private var editButton: some View {
         if isSelected, !isEditing {
             Button(action: {
+                viewModel.editingAppGroupId = appGroup.id
                 isEditing = true
             }, label: {
                 Image(systemName: "pencil")
@@ -88,18 +88,20 @@ struct AppGroupDropModifier: ViewModifier {
     @State var isTargeted: Bool = false
 
     func body(content: Content) -> some View {
-        content
-            .contentShape(Rectangle())
-            .dropDestination(
-                for: MacAppWithAppGroup.self,
-                action: handleDrop,
-                isTargeted: { isTargeted = $0 }
-            )
-            .listRowBackground(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(Color.accentColor.opacity(0.2))
-                    .padding(.horizontal, 10) // match list selection styling
-                    .opacity(isTargeted ? 1 : 0)
-            )
+        HStack {
+            content
+            Spacer() // Make sure the drop target extends all the way
+        }
+        .dropDestination(
+            for: MacAppWithAppGroup.self,
+            action: handleDrop,
+            isTargeted: { isTargeted = $0 }
+        )
+        .listRowBackground(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.accentColor.opacity(0.2))
+                .padding(.horizontal, 10) // match list selection styling
+                .opacity(isTargeted ? 1 : 0)
+        )
     }
 }
