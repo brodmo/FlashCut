@@ -8,7 +8,7 @@ struct AppGroupConfigurationView: View {
     private let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
 
     private var targetAppOptions: [MacApp] {
-        [AppConstants.lastFocusedOption] + apps
+        [AppConstants.mostRecentOption] + apps
     }
 
     private var shortcutBinding: Binding<AppHotKey?> {
@@ -23,10 +23,10 @@ struct AppGroupConfigurationView: View {
 
     private var targetAppBinding: Binding<MacApp?> {
         Binding(
-            get: { appGroup.targetApp ?? AppConstants.lastFocusedOption },
+            get: { appGroup.targetApp ?? AppConstants.mostRecentOption },
             set: { newValue in
-                appGroup.targetApp = newValue == AppConstants.lastFocusedOption ? nil : newValue
-                appGroup.openAppsOnActivation = newValue == AppConstants.lastFocusedOption ? nil : true
+                appGroup.targetApp = newValue == AppConstants.mostRecentOption ? nil : newValue
+                appGroup.openAppsOnActivation = newValue == AppConstants.mostRecentOption ? nil : true
                 appGroupRepository.updateAppGroup(appGroup)
             }
         )
@@ -44,23 +44,13 @@ struct AppGroupConfigurationView: View {
     }
 
     private var configuration: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Shortcut
-            HotKeyControl(shortcut: shortcutBinding)
-
-            Spacer()
-                .frame(height: 16)
-
-            // Primary App with tooltip
+        VStack(alignment: .leading) {
             HStack(spacing: 4) {
-                Text("Main")
-
-                Image(systemName: "questionmark.circle")
-                    .foregroundColor(.secondary)
-                    .help("The Main App is always opened, even if it is not yet running")
-
-                Spacer()
-
+                Text("On")
+                HotKeyControl(shortcut: shortcutBinding)
+            }
+            HStack(spacing: 4) {
+                Text("Open")
                 Picker("", selection: targetAppBinding) {
                     ForEach(targetAppOptions, id: \.self) { app in
                         Text(app.name)
@@ -70,10 +60,9 @@ struct AppGroupConfigurationView: View {
                     }
                 }
                 .labelsHidden()
-                .frame(maxWidth: 100)
             }
         }
-        .padding(.top, 12)
+        .padding(.top, 8)
         .padding(.bottom, 4)
     }
 }

@@ -1,9 +1,9 @@
 import AppKit
 
 enum AppConstants {
-    static let lastFocusedOption = MacApp(
-        name: "None",
-        bundleIdentifier: "flashcut.last-focused",
+    static let mostRecentOption = MacApp(
+        name: "Most Recent",
+        bundleIdentifier: "flashcut.most-recent",
         iconPath: nil
     )
 

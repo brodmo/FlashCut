@@ -9,7 +9,7 @@ struct AppGroup: Identifiable, Codable, Hashable {
         case name
         case activateShortcut = "shortcut"
         case apps
-        case targetApp = "appToFocus"
+        case targetApp = "target"
         case openAppsOnActivation
     }
 
