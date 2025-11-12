@@ -4,7 +4,6 @@ import SwiftUI
 struct MainView: View {
     @StateObject var viewModel = MainViewModel()
     @Environment(\.openWindow) var openWindow
-    @State private var selectedAppGroupIds: Set<UUID> = []
 
     var body: some View {
         HStack(alignment: .top, spacing: 16.0) {
@@ -15,7 +14,7 @@ struct MainView: View {
         .frame(minWidth: 450, minHeight: 350)
         .onChange(of: viewModel.newlyCreatedAppGroupId) { _, newId in
             if let newId {
-                selectedAppGroupIds = [newId]
+                viewModel.selectedAppGroupIds = [newId]
                 viewModel.newlyCreatedAppGroupId = nil
             }
         }
@@ -45,12 +44,11 @@ struct MainView: View {
 
     private var appGroups: some View {
         VStack(alignment: .leading) {
-            List(selection: $selectedAppGroupIds) {
+            List(selection: $viewModel.selectedAppGroupIds) {
                 ForEach($viewModel.appGroups) { $appGroup in
                     AppGroupCell(
                         viewModel: viewModel,
-                        appGroup: $appGroup,
-                        isSelected: selectedAppGroupIds.contains(appGroup.id)
+                        appGroup: $appGroup
                     )
                     .tag(appGroup.id)
                 }
@@ -58,8 +56,7 @@ struct MainView: View {
                     viewModel.appGroups.move(fromOffsets: from, toOffset: to)
                 }
             }
-            .onChange(of: selectedAppGroupIds) { _, newIds in
-                viewModel.selectedAppGroups = Set(viewModel.appGroups.filter { newIds.contains($0.id) })
+            .onChange(of: viewModel.selectedAppGroupIds) { _, newIds in
                 // Clear editing if the edited group is no longer selected
                 if let editingId = viewModel.editingAppGroupId, !newIds.contains(editingId) {
                     viewModel.editingAppGroupId = nil
@@ -77,7 +74,7 @@ struct MainView: View {
                     Image(systemName: "trash")
                         .frame(height: 16)
                 }
-                .disabled(viewModel.selectedAppGroups.isEmpty)
+                .disabled(viewModel.selectedAppGroupIds.isEmpty)
 
                 Spacer()
             }

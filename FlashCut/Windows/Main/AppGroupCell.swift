@@ -6,7 +6,6 @@ struct AppGroupCell: View {
     @State var visibleName: String = ""
     @FocusState private var isEditing: Bool
     @Binding var appGroup: AppGroup
-    let isSelected: Bool
 
     let appGroupManager: AppGroupManager = AppDependencies.shared.appGroupManager
     let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
@@ -52,6 +51,7 @@ struct AppGroupCell: View {
 
     @ViewBuilder
     private var editButton: some View {
+        var isSelected = viewModel.selectedAppGroupIds.contains(appGroup.id)
         if isSelected, !isEditing {
             Button(action: {
                 viewModel.editingAppGroupId = appGroup.id

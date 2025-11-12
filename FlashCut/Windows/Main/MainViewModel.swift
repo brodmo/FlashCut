@@ -39,18 +39,18 @@ final class MainViewModel: ObservableObject {
         }
     }
 
-    var selectedAppGroups: Set<AppGroup> = [] {
+    @Published var selectedAppGroupIds: Set<UUID> = [] {
         didSet {
-            selectedAppGroup = selectedAppGroups.count == 1
-                ? selectedAppGroups.first
+            selectedAppGroup = selectedAppGroupIds.count == 1
+                ? appGroups.first(where: { selectedAppGroupIds.contains($0.id) })
                 : nil
 
             // To avoid warnings
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [self] in
-                if selectedAppGroups.count == 1,
-                   selectedAppGroups.first?.id != oldValue.first?.id {
+                if selectedAppGroupIds.count == 1,
+                   selectedAppGroupIds.first != oldValue.first {
                     selectedApps = []
-                } else if selectedAppGroups.count != 1 {
+                } else if selectedAppGroupIds.count != 1 {
                     selectedApps = []
                 }
                 objectWillChange.send()
@@ -96,15 +96,15 @@ final class MainViewModel: ObservableObject {
         appGroupShortcut = selectedAppGroup?.activateShortcut
         appGroupApps = selectedAppGroup?.apps
         appGroupTargetApp = selectedAppGroup?.targetApp ?? AppConstants.lastFocusedOption
-        selectedAppGroup.flatMap { selectedAppGroups = [$0] }
+        selectedAppGroup.flatMap { selectedAppGroupIds = [$0.id] }
     }
 
     private func reloadAppGroups() {
         appGroups = appGroupRepository.appGroups
         if let selectedAppGroup, let appGroup = appGroupRepository.findAppGroup(with: selectedAppGroup.id) {
-            selectedAppGroups = [appGroup]
+            selectedAppGroupIds = [appGroup.id]
         } else {
-            selectedAppGroups = []
+            selectedAppGroupIds = []
         }
         selectedApps = []
     }
@@ -152,11 +152,11 @@ extension MainViewModel {
     }
 
     func deleteSelectedAppGroups() {
-        guard !selectedAppGroups.isEmpty else { return }
+        guard !selectedAppGroupIds.isEmpty else { return }
 
-        appGroupRepository.deleteAppGroups(ids: selectedAppGroups.map(\.id).asSet)
+        appGroupRepository.deleteAppGroups(ids: selectedAppGroupIds)
         appGroups = appGroupRepository.appGroups
-        selectedAppGroups = []
+        selectedAppGroupIds = []
     }
 
     func addApp() {
