@@ -12,11 +12,6 @@ final class MainViewModel: ObservableObject {
         }
     }
 
-    func getAppGroup(id: UUID?) -> AppGroup? {
-        guard let id else { return nil }
-        return appGroups.first(where: { $0.id == id })
-    }
-
     private var cancellables: Set<AnyCancellable> = []
 
     private let appGroupManager = AppDependencies.shared.appGroupManager
@@ -41,7 +36,7 @@ final class MainViewModel: ObservableObject {
 }
 
 extension MainViewModel {
-    func addAppGroup() -> UUID? {
+    func addAppGroup() -> AppGroup? {
         // Find a unique name for the new app group
         var counter = 1
         var name = "New App Group"
@@ -53,22 +48,18 @@ extension MainViewModel {
         appGroupRepository.addAppGroup(name: name)
         appGroups = appGroupRepository.appGroups
 
-        if let newAppGroup = appGroups.last {
-            return newAppGroup.id
-        }
-        return nil
+        return appGroups.last
     }
 
-    func deleteAppGroups(ids: Set<UUID>) {
-        guard !ids.isEmpty else { return }
+    func deleteAppGroups(_ groups: Set<AppGroup>) {
+        guard !groups.isEmpty else { return }
 
+        let ids = Set(groups.map(\.id))
         appGroupRepository.deleteAppGroups(ids: ids)
         appGroups = appGroupRepository.appGroups
     }
 
-    func addApp(toGroupId groupId: UUID) {
-        guard let selectedAppGroup = getAppGroup(id: groupId) else { return }
-
+    func addApp(to group: AppGroup) {
         let fileChooser = FileChooser()
         let appUrl = fileChooser.runModalOpenPanel(
             allowedFileTypes: [.application],
@@ -90,30 +81,30 @@ extension MainViewModel {
             return
         }
 
-        guard !selectedAppGroup.apps.containsApp(with: appBundleId) else { return }
+        guard !group.apps.containsApp(with: appBundleId) else { return }
 
         let newApp = MacApp(
             name: appName,
             bundleIdentifier: appBundleId,
             iconPath: appUrl.iconPath
         )
-        selectedAppGroup.apps.append(newApp)
+        group.apps.append(newApp)
         appGroupRepository.save()
 
-        appGroupManager.activateAppGroupIfActive(selectedAppGroup.id)
+        appGroupManager.activateAppGroupIfActive(group.id)
     }
 
-    func deleteApps(_ apps: Set<MacApp>, fromGroupId groupId: UUID) {
-        guard let selectedAppGroup = getAppGroup(id: groupId), !apps.isEmpty else { return }
+    func deleteApps(_ apps: Set<MacApp>, from group: AppGroup) {
+        guard !apps.isEmpty else { return }
 
         for app in apps {
-            if selectedAppGroup.targetApp == app {
-                selectedAppGroup.targetApp = nil
+            if group.targetApp == app {
+                group.targetApp = nil
             }
-            selectedAppGroup.apps.removeAll { $0 == app }
+            group.apps.removeAll { $0 == app }
         }
         appGroupRepository.save()
 
-        appGroupManager.activateAppGroupIfActive(selectedAppGroup.id)
+        appGroupManager.activateAppGroupIfActive(group.id)
     }
 }
