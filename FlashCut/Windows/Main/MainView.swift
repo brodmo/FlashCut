@@ -12,6 +12,15 @@ struct MainView: View {
         return selectedAppGroups.first
     }
 
+    private var settingsButton: some View {
+        Button(action: {
+            openWindow(id: "settings")
+        }, label: {
+            Image(systemName: "gearshape")
+                .foregroundColor(.primary)
+        }).keyboardShortcut(",")
+    }
+
     var body: some View {
         HStack(alignment: .top, spacing: 16.0) {
             appGroups
@@ -22,24 +31,17 @@ struct MainView: View {
     }
 
     private var rightPanel: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack {
             if let appGroup = currentAppGroup {
-                AppGroupConfigurationView(
-                    appGroup: appGroup,
-                    apps: appGroup.apps
-                )
-                .padding(.bottom, 12)
-                AppListView(appGroup: appGroup)
+                AppGroupConfigurationView(appGroup: appGroup)
+                AppListView(appGroup: appGroup) {
+                    settingsButton
+                }
             } else {
                 Spacer()
                 HStack {
                     Spacer()
-                    Button(action: {
-                        openWindow(id: "settings")
-                    }, label: {
-                        Image(systemName: "gearshape")
-                            .foregroundColor(.primary)
-                    }).keyboardShortcut(",")
+                    settingsButton
                 }
             }
         }

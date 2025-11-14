@@ -1,10 +1,10 @@
 import AppKit
 import SwiftUI
 
-struct AppListView: View {
+struct AppListView<TrailingButtons: View>: View {
     let appGroup: AppGroup
     @State private var selectedApps: Set<MacApp> = []
-    @Environment(\.openWindow) var openWindow
+    @ViewBuilder let trailingButtons: () -> TrailingButtons
 
     private let repository = AppDependencies.shared.appGroupRepository
     private let appGroupManager = AppDependencies.shared.appGroupManager
@@ -43,12 +43,7 @@ struct AppListView: View {
 
                 Spacer()
 
-                Button(action: {
-                    openWindow(id: "settings")
-                }, label: {
-                    Image(systemName: "gearshape")
-                        .foregroundColor(.primary)
-                }).keyboardShortcut(",")
+                trailingButtons()
             }
         }
     }

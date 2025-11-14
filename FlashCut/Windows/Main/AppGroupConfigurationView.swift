@@ -3,13 +3,8 @@ import SwiftUI
 
 struct AppGroupConfigurationView: View {
     @Bindable var appGroup: AppGroup
-    let apps: [MacApp]
 
     private let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
-
-    private var targetAppOptions: [MacApp] {
-        [AppConstants.mostRecentOption] + apps
-    }
 
     private var targetAppBinding: Binding<MacApp?> {
         Binding(
@@ -45,6 +40,7 @@ struct AppGroupConfigurationView: View {
             HStack(spacing: 4) {
                 Text("Open")
                 Picker("", selection: targetAppBinding) {
+                    let targetAppOptions = [AppConstants.mostRecentOption] + appGroup.apps
                     ForEach(targetAppOptions, id: \.self) { app in
                         Text(app.name)
                             .lineLimit(1)
@@ -56,5 +52,6 @@ struct AppGroupConfigurationView: View {
             }
         }
         .padding(.top, 4)
+        .padding(.bottom, 4)
     }
 }
