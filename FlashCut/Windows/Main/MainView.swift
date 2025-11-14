@@ -6,7 +6,7 @@ struct MainView: View {
     @Environment(\.openWindow) var openWindow
     @State private var selectedAppGroups: Set<AppGroup> = []
     @State private var selectedApps: Set<MacApp> = []
-    @State private var editingAppGroupId: UUID?
+    @State private var editingAppGroup: AppGroup?
 
     private var currentAppGroup: AppGroup? {
         guard selectedAppGroups.count == 1 else { return nil }
@@ -59,7 +59,8 @@ struct MainView: View {
                         viewModel: viewModel,
                         appGroup: appGroup,
                         isCurrent: currentAppGroup == appGroup,
-                        editingAppGroupId: $editingAppGroupId
+                        editOnAppear: editingAppGroup == appGroup,
+                        onEditingComplete: { editingAppGroup = nil }
                     )
                     .tag(appGroup)
                 }
@@ -84,7 +85,7 @@ struct MainView: View {
                 Button(action: {
                     if let newGroup = viewModel.addAppGroup() {
                         selectedAppGroups = [newGroup]
-                        editingAppGroupId = newGroup.id
+                        editingAppGroup = newGroup
                     }
                 }, label: {
                     Image(systemName: "plus")

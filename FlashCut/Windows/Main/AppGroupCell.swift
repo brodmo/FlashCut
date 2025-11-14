@@ -7,7 +7,8 @@ struct AppGroupCell: View {
     @FocusState private var isEditing: Bool
     let appGroup: AppGroup
     let isCurrent: Bool
-    @Binding var editingAppGroupId: UUID?
+    let editOnAppear: Bool
+    let onEditingComplete: () -> ()
 
     let appGroupManager: AppGroupManager = AppDependencies.shared.appGroupManager
     let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
@@ -32,13 +33,13 @@ struct AppGroupCell: View {
             .onAppear {
                 visibleName = appGroup.name
                 // new app group cell is edited immediately
-                if editingAppGroupId == appGroup.id {
+                if editOnAppear {
                     isEditing = true
                 }
             }
-            .onChange(of: isEditing) { _, value in
-                if !value { // isEditing is set to false automatically when edit is finished
-                    editingAppGroupId = nil
+            .onChange(of: isEditing) { _, editing in
+                if !editing { // isEditing is set to false automatically when focus is lost
+                    onEditingComplete()
                 }
             }
             .onSubmit {
@@ -54,7 +55,6 @@ struct AppGroupCell: View {
     private var editButton: some View {
         let isVisible = isCurrent && !isEditing
         return Button(action: {
-            editingAppGroupId = appGroup.id
             isEditing = true
         }, label: {
             Image(systemName: "pencil")
