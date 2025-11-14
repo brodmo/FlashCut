@@ -35,12 +35,6 @@ final class AppGroupRepository: ObservableObject {
         appGroups.first { $0.id == id }
     }
 
-    func addAppGroup(name: String) {
-        let appGroup = AppGroup(name: name)
-        appGroups.append(appGroup)
-        save()
-    }
-
     func addAppGroup(_ appGroup: AppGroup) {
         appGroups.append(appGroup)
         save()

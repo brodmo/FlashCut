@@ -36,7 +36,7 @@ final class MainViewModel: ObservableObject {
 }
 
 extension MainViewModel {
-    func addAppGroup() -> AppGroup? {
+    func createAppGroup() -> AppGroup {
         // Find a unique name for the new app group
         var counter = 1
         var name = "New App Group"
@@ -45,10 +45,12 @@ extension MainViewModel {
             name = "New App Group \(counter)"
         }
 
-        appGroupRepository.addAppGroup(name: name)
-        appGroups = appGroupRepository.appGroups
+        return AppGroup(name: name)
+    }
 
-        return appGroups.last
+    func addAppGroup(_ appGroup: AppGroup) {
+        appGroupRepository.addAppGroup(appGroup)
+        appGroups = appGroupRepository.appGroups
     }
 
     func deleteAppGroups(_ groups: Set<AppGroup>) {

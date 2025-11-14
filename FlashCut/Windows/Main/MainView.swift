@@ -83,10 +83,10 @@ struct MainView: View {
 
             HStack {
                 Button(action: {
-                    if let newGroup = viewModel.addAppGroup() {
-                        selectedAppGroups = [newGroup]
-                        editingAppGroup = newGroup
-                    }
+                    let newGroup = viewModel.createAppGroup()
+                    editingAppGroup = newGroup
+                    selectedAppGroups = [newGroup]
+                    viewModel.addAppGroup(newGroup)
                 }, label: {
                     Image(systemName: "plus")
                         .frame(height: 16)
