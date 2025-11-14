@@ -2,11 +2,13 @@ import AppKit
 import SwiftUI
 
 struct MainView: View {
-    @StateObject var viewModel = MainViewModel()
+    @ObservedObject var repository = AppDependencies.shared.appGroupRepository
     @Environment(\.openWindow) var openWindow
     @State private var selectedAppGroups: Set<AppGroup> = []
     @State private var selectedApps: Set<MacApp> = []
     @State private var editingAppGroup: AppGroup?
+
+    private let appGroupManager = AppDependencies.shared.appGroupManager
 
     private var currentAppGroup: AppGroup? {
         guard selectedAppGroups.count == 1 else { return nil }
@@ -54,9 +56,8 @@ struct MainView: View {
     private var appGroups: some View {
         VStack(alignment: .leading) {
             List(selection: $selectedAppGroups) {
-                ForEach(viewModel.appGroups) { appGroup in
+                ForEach(repository.appGroups) { appGroup in
                     AppGroupCell(
-                        viewModel: viewModel,
                         appGroup: appGroup,
                         isCurrent: currentAppGroup == appGroup,
                         editOnAppear: editingAppGroup == appGroup,
@@ -65,7 +66,7 @@ struct MainView: View {
                     .tag(appGroup)
                 }
                 .onMove { from, to in
-                    viewModel.reorderAppGroups(from: from, to: to)
+                    repository.reorderAppGroups(from: from, to: to)
                 }
             }
             .onChange(of: selectedAppGroups) { oldGroups, newGroups in
@@ -83,17 +84,17 @@ struct MainView: View {
 
             HStack {
                 Button(action: {
-                    let newGroup = viewModel.createAppGroup()
+                    let newGroup = AppGroup.createUnique(from: repository.appGroups)
                     editingAppGroup = newGroup
+                    repository.addAppGroup(newGroup)
                     selectedAppGroups = [newGroup]
-                    viewModel.addAppGroup(newGroup)
                 }, label: {
                     Image(systemName: "plus")
                         .frame(height: 16)
                 })
 
                 Button(action: {
-                    viewModel.deleteAppGroups(selectedAppGroups)
+                    repository.deleteAppGroups(selectedAppGroups)
                     selectedAppGroups = []
                 }, label: {
                     Image(systemName: "trash")
@@ -124,7 +125,7 @@ struct MainView: View {
             HStack {
                 Button(action: {
                     if let group = currentAppGroup {
-                        viewModel.addApp(to: group)
+                        addApp(to: group)
                     }
                 }) {
                     Image(systemName: "plus")
@@ -133,7 +134,7 @@ struct MainView: View {
 
                 Button(action: {
                     if let group = currentAppGroup {
-                        viewModel.deleteApps(selectedApps, from: group)
+                        deleteApps(selectedApps, from: group)
                         selectedApps = []
                     }
                 }) {
@@ -153,6 +154,55 @@ struct MainView: View {
                 }).keyboardShortcut(",")
             }
         }
+    }
+
+    private func addApp(to group: AppGroup) {
+        let fileChooser = FileChooser()
+        let appUrl = fileChooser.runModalOpenPanel(
+            allowedFileTypes: [.application],
+            directoryURL: URL(filePath: "/Applications")
+        )
+
+        guard let appUrl else { return }
+
+        let appName = appUrl.appName
+        let appBundleId = appUrl.bundleIdentifier ?? ""
+        let runningApp = NSWorkspace.shared.runningApplications.first { $0.bundleIdentifier == appBundleId }
+        let isAgent = appUrl.bundle?.isAgent == true && (runningApp == nil || runningApp?.activationPolicy != .regular)
+
+        guard !isAgent else {
+            Alert.showOkAlert(
+                title: appName,
+                message: "This application is an agent (runs in background) and cannot be managed by FlashCut."
+            )
+            return
+        }
+
+        guard !group.apps.containsApp(with: appBundleId) else { return }
+
+        let newApp = MacApp(
+            name: appName,
+            bundleIdentifier: appBundleId,
+            iconPath: appUrl.iconPath
+        )
+        group.apps.append(newApp)
+        repository.save()
+
+        appGroupManager.activateAppGroupIfActive(group.id)
+    }
+
+    private func deleteApps(_ apps: Set<MacApp>, from group: AppGroup) {
+        guard !apps.isEmpty else { return }
+
+        for app in apps {
+            if group.targetApp == app {
+                group.targetApp = nil
+            }
+            group.apps.removeAll { $0 == app }
+        }
+        repository.save()
+
+        appGroupManager.activateAppGroupIfActive(group.id)
     }
 }
 

@@ -2,7 +2,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct AppGroupCell: View {
-    @ObservedObject var viewModel: MainViewModel
     @State var visibleName: String = ""
     @FocusState private var isEditing: Bool
     let appGroup: AppGroup

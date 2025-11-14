@@ -45,8 +45,8 @@ final class AppGroupRepository: ObservableObject {
         save()
     }
 
-    func deleteAppGroups(ids: Set<AppGroupID>) {
-        appGroups.removeAll { ids.contains($0.id) }
+    func deleteAppGroups(_ groups: Set<AppGroup>) {
+        appGroups.removeAll { groups.contains($0) }
         save()
     }
 
@@ -60,9 +60,8 @@ final class AppGroupRepository: ObservableObject {
         save()
     }
 
-    func reorderAppGroups(newOrder: [AppGroupID]) {
-        let map = newOrder.enumerated().reduce(into: [AppGroupID: Int]()) { $0[$1.element] = $1.offset }
-        appGroups = appGroups.sorted { map[$0.id] ?? 0 < map[$1.id] ?? 0 }
+    func reorderAppGroups(from: IndexSet, to: Int) {
+        appGroups.move(fromOffsets: from, toOffset: to)
         save()
     }
 
