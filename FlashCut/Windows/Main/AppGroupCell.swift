@@ -15,7 +15,9 @@ struct AppGroupCell: View {
     var body: some View {
         HStack(spacing: 4) {
             nameField
-            editButton
+            if isCurrent, !isNew, !isEditing {
+                editButton
+            }
         }
         .foregroundColor( // broken app indication
             appGroup.apps.contains(where: \.bundleIdentifier.isEmpty) ? .errorRed : .primary
@@ -29,6 +31,7 @@ struct AppGroupCell: View {
             .lineLimit(1)
             .fixedSize(horizontal: !isEditing, vertical: false)
             .focused($isEditing)
+            .opacity(isNew && !isEditing ? 0 : 1)
             .onAppear {
                 visibleName = appGroup.name
                 if isNew {
@@ -51,8 +54,7 @@ struct AppGroupCell: View {
     }
 
     private var editButton: some View {
-        let isVisible = isCurrent && !isEditing
-        return Button(action: {
+        Button(action: {
             isEditing = true
         }, label: {
             Image(systemName: "pencil")
@@ -60,8 +62,6 @@ struct AppGroupCell: View {
                 .font(.system(size: 11))
         })
         .buttonStyle(.plain)
-        .opacity(isVisible ? 1 : 0)
-        .allowsHitTesting(isVisible)
     }
 
     private func handleDrop(_ apps: [MacAppWithAppGroup], _ _: CGPoint) -> Bool {
