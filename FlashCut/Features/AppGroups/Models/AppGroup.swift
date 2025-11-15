@@ -48,6 +48,7 @@ class AppGroup: Identifiable, Codable, Hashable {
     }
 
     // MARK: - Codable
+
     // Manual implementation required due to @Observable macro
 
     required init(from decoder: Decoder) throws {
@@ -79,16 +80,5 @@ extension AppGroup {
             .asSet
 
         return apps.contains { runningBundleIds.contains($0.bundleIdentifier) }
-    }
-
-    /// Create a new app group with a unique name
-    static func createUnique(from existing: [AppGroup]) -> AppGroup {
-        var counter = 1
-        var name = "New App Group"
-        while existing.contains(where: { $0.name == name }) {
-            counter += 1
-            name = "New App Group \(counter)"
-        }
-        return AppGroup(name: name)
     }
 }

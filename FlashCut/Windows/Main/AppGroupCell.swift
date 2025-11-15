@@ -6,8 +6,8 @@ struct AppGroupCell: View {
     @FocusState private var isEditing: Bool
     let appGroup: AppGroup
     let isCurrent: Bool
-    let editOnAppear: Bool
-    let onEditingComplete: () -> ()
+    let isNew: Bool
+    let onNewIsDone: () -> ()
 
     let appGroupManager: AppGroupManager = AppDependencies.shared.appGroupManager
     let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
@@ -31,23 +31,22 @@ struct AppGroupCell: View {
             .focused($isEditing)
             .onAppear {
                 visibleName = appGroup.name
-                // new app group cell is edited immediately
-                if editOnAppear {
+                if isNew {
                     isEditing = true
                 }
             }
-            .onChange(of: isEditing) { _, editing in
-                if !editing { // isEditing is set to false automatically when focus is lost
-                    onEditingComplete()
+            .onChange(of: isEditing) { oldValue, _ in
+                // if we were editing a new group
+                if oldValue, isNew {
+                    onNewIsDone()
                 }
             }
             .onSubmit {
-                let trimmedName = visibleName.trimmingCharacters(in: .whitespacesAndNewlines)
-                let finalName = trimmedName.isEmpty ? "(empty)" : trimmedName
-                guard finalName != appGroup.name else { return }
-                appGroup.name = finalName
-                appGroupRepository.save()
-                visibleName = finalName
+                let name = visibleName.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !name.isEmpty, name != appGroup.name else { return }
+                appGroup.name = name
+                appGroupRepository.save() // New app groups are saved to disk here, not before
+                visibleName = name
             }
     }
 

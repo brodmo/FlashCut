@@ -5,7 +5,7 @@ struct MainView: View {
     @ObservedObject var repository = AppDependencies.shared.appGroupRepository
     @Environment(\.openWindow) var openWindow
     @State private var selectedAppGroups: Set<AppGroup> = []
-    @State private var editingAppGroup: AppGroup?
+    @State private var newAppGroup: AppGroup?
 
     private var currentAppGroup: AppGroup? {
         guard selectedAppGroups.count == 1 else { return nil }
@@ -32,7 +32,7 @@ struct MainView: View {
 
     private var rightPanel: some View {
         VStack {
-            if let appGroup = currentAppGroup {
+            if let appGroup = currentAppGroup, appGroup != newAppGroup {
                 AppGroupConfigurationView(appGroup: appGroup)
                 AppListView(appGroup: appGroup) {
                     settingsButton
@@ -55,8 +55,14 @@ struct MainView: View {
                     AppGroupCell(
                         appGroup: appGroup,
                         isCurrent: currentAppGroup == appGroup,
-                        editOnAppear: editingAppGroup == appGroup,
-                        onEditingComplete: { editingAppGroup = nil }
+                        isNew: newAppGroup == appGroup,
+                        onNewIsDone: {
+                            newAppGroup = nil
+                            if appGroup.name.isEmpty {
+                                repository.deleteAppGroup(id: appGroup.id)
+                                selectedAppGroups = []
+                            }
+                        }
                     )
                     .tag(appGroup)
                 }
@@ -68,8 +74,8 @@ struct MainView: View {
 
             HStack {
                 Button(action: {
-                    let newGroup = AppGroup.createUnique(from: repository.appGroups)
-                    editingAppGroup = newGroup
+                    let newGroup = AppGroup(name: "")
+                    newAppGroup = newGroup
                     repository.addAppGroup(newGroup)
                     selectedAppGroups = [newGroup]
                 }, label: {
