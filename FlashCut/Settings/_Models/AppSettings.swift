@@ -2,25 +2,17 @@ struct AppSettings: Codable {
     enum CodingKeys: String, CodingKey {
         case checkForUpdatesAutomatically
         case showFlashCut
-        case switchToNextAppInGroup
-        case switchToPreviousAppInGroup
-        case loopAppGroups
-        case switchToRecentAppGroup
-        case switchToPreviousAppGroup
-        case switchToNextAppGroup
+        case recentAppGroup
+        case nextAppInGroup
+        case previousAppInGroup
     }
 
     // General
     var checkForUpdatesAutomatically: Bool?
     var showFlashCut: AppHotKey?
 
-    // App Manager
-    var switchToNextAppInGroup: AppHotKey?
-    var switchToPreviousAppInGroup: AppHotKey?
-
     // App Groups
-    var loopAppGroups: Bool?
-    var switchToRecentAppGroup: AppHotKey?
-    var switchToPreviousAppGroup: AppHotKey?
-    var switchToNextAppGroup: AppHotKey?
+    var recentAppGroup: AppHotKey?
+    var nextAppInGroup: AppHotKey?
+    var previousAppInGroup: AppHotKey?
 }

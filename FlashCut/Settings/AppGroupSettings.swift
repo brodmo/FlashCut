@@ -2,10 +2,9 @@ import Combine
 import Foundation
 
 final class AppGroupSettings: ObservableObject {
-    @Published var loopAppGroups = true
-    @Published var switchToRecentAppGroup: AppHotKey?
-    @Published var switchToPreviousAppGroup: AppHotKey?
-    @Published var switchToNextAppGroup: AppHotKey?
+    @Published var recentAppGroup: AppHotKey?
+    @Published var nextAppInGroup: AppHotKey?
+    @Published var previousAppInGroup: AppHotKey?
 
     private var observer: AnyCancellable?
     private let updateSubject = PassthroughSubject<(), Never>()
@@ -14,10 +13,9 @@ final class AppGroupSettings: ObservableObject {
 
     private func observe() {
         observer = Publishers.MergeMany(
-            $loopAppGroups.settingsPublisher(),
-            $switchToRecentAppGroup.settingsPublisher(),
-            $switchToPreviousAppGroup.settingsPublisher(),
-            $switchToNextAppGroup.settingsPublisher()
+            $recentAppGroup.settingsPublisher(),
+            $nextAppInGroup.settingsPublisher(),
+            $previousAppInGroup.settingsPublisher()
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] in self?.updateSubject.send() }
@@ -31,17 +29,15 @@ extension AppGroupSettings: SettingsProtocol {
 
     func load(from appSettings: AppSettings) {
         observer = nil
-        loopAppGroups = appSettings.loopAppGroups ?? true
-        switchToRecentAppGroup = appSettings.switchToRecentAppGroup
-        switchToPreviousAppGroup = appSettings.switchToPreviousAppGroup
-        switchToNextAppGroup = appSettings.switchToNextAppGroup
+        recentAppGroup = appSettings.recentAppGroup
+        nextAppInGroup = appSettings.nextAppInGroup
+        previousAppInGroup = appSettings.previousAppInGroup
         observe()
     }
 
     func update(_ appSettings: inout AppSettings) {
-        appSettings.loopAppGroups = loopAppGroups
-        appSettings.switchToRecentAppGroup = switchToRecentAppGroup
-        appSettings.switchToPreviousAppGroup = switchToPreviousAppGroup
-        appSettings.switchToNextAppGroup = switchToNextAppGroup
+        appSettings.recentAppGroup = recentAppGroup
+        appSettings.nextAppInGroup = nextAppInGroup
+        appSettings.previousAppInGroup = previousAppInGroup
     }
 }

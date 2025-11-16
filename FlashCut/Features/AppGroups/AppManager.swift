@@ -6,22 +6,22 @@ final class AppManager {
 
     private let appGroupRepository: AppGroupRepository
     private let appGroupManager: AppGroupManager
-    private let settings: AppManagerSettings
+    private let settings: AppGroupSettings
 
     init(
         appGroupRepository: AppGroupRepository,
         appGroupManager: AppGroupManager,
-        appManagerSettings: AppManagerSettings
+        appGroupSettings: AppGroupSettings
     ) {
         self.appGroupRepository = appGroupRepository
         self.appGroupManager = appGroupManager
-        self.settings = appManagerSettings
+        self.settings = appGroupSettings
     }
 
     func getHotKeys() -> [(AppHotKey, () -> ())] {
         [
-            settings.switchToNextAppInGroup.flatMap { ($0, nextAppGroupApp) },
-            settings.switchToPreviousAppInGroup.flatMap { ($0, previousAppGroupApp) }
+            settings.nextAppInGroup.flatMap { ($0, nextAppGroupApp) },
+            settings.previousAppInGroup.flatMap { ($0, previousAppGroupApp) }
         ].compactMap { $0 }
     }
 

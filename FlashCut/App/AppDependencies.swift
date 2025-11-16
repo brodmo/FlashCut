@@ -14,7 +14,6 @@ struct AppDependencies {
 
     let settingsRepository: SettingsRepository
     let generalSettings = GeneralSettings()
-    let appManagerSettings = AppManagerSettings()
     let appGroupSettings = AppGroupSettings()
 
     let autostartService = AutostartService()
@@ -22,7 +21,6 @@ struct AppDependencies {
     private init() {
         self.settingsRepository = SettingsRepository(
             generalSettings: generalSettings,
-            appManagerSettings: appManagerSettings,
             appGroupSettings: appGroupSettings
         )
         self.appGroupRepository = AppGroupRepository()
@@ -38,7 +36,7 @@ struct AppDependencies {
         self.appManager = AppManager(
             appGroupRepository: appGroupRepository,
             appGroupManager: appGroupManager,
-            appManagerSettings: appManagerSettings
+            appGroupSettings: appGroupSettings
         )
         self.hotKeysManager = HotKeysManager(
             hotKeysMonitor: GlobalShortcutMonitor.shared,

@@ -94,30 +94,6 @@ extension AppGroupManager {
         findApp(in: appGroup)
     }
 
-    func openAppGroup(next: Bool, loop: Bool) {
-        let appGroups = appGroupRepository.appGroups
-
-        guard let currentAppGroup = lastAppGroup ?? appGroups.first else {
-            // No appGroup opened yet, open first one
-            if let first = appGroups.first {
-                openAppGroup(first)
-            }
-            return
-        }
-
-        let appGroupsToLoop = next ? appGroups : appGroups.reversed()
-
-        let nextAppGroups = appGroupsToLoop
-            .drop(while: { $0.id != currentAppGroup.id })
-            .dropFirst()
-
-        let selectedAppGroup = nextAppGroups.first ?? (loop ? appGroupsToLoop.first : nil)
-
-        guard let selectedAppGroup, selectedAppGroup.id != currentAppGroup.id else { return }
-
-        openAppGroup(selectedAppGroup)
-    }
-
     func openRecentAppGroup() {
         // Alt+Tab-like behavior for app groups: switch to previous appGroup
         guard let previous = previousAppGroup else { return }
