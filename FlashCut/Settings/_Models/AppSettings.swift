@@ -1,7 +1,6 @@
 struct AppSettings: Codable {
     enum CodingKeys: String, CodingKey {
         case checkForUpdatesAutomatically
-        case showFlashCut
         case recentAppGroup
         case nextAppInGroup
         case previousAppInGroup
@@ -9,7 +8,6 @@ struct AppSettings: Codable {
 
     // General
     var checkForUpdatesAutomatically: Bool?
-    var showFlashCut: AppHotKey?
 
     // App Groups
     var recentAppGroup: AppHotKey?

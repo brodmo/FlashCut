@@ -60,24 +60,6 @@ final class HotKeysManager {
             hotKeysMonitor.addAction(action, forKeyEvent: .down)
             addShortcut("App Manager", shortcut)
         }
-
-        // General
-        if let showHotKey = settingsRepository.generalSettings.showFlashCut?.toShortcut() {
-            let action = ShortcutAction(shortcut: showHotKey) { _ in
-                let visibleAppWindows = NSApp.windows
-                    .filter(\.isVisible)
-                    .filter { $0.identifier?.rawValue == "main" || $0.identifier?.rawValue == "settings" }
-
-                if visibleAppWindows.isEmpty {
-                    NotificationCenter.default.post(name: .openMainWindow, object: nil)
-                } else {
-                    visibleAppWindows.forEach { $0.close() }
-                }
-                return true
-            }
-            hotKeysMonitor.addAction(action, forKeyEvent: .down)
-            addShortcut("General", showHotKey)
-        }
     }
 
     func disableAll() {
