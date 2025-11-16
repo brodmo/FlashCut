@@ -2,8 +2,8 @@ struct AppSettings: Codable {
     enum CodingKeys: String, CodingKey {
         case checkForUpdatesAutomatically
         case showFlashCut
-        case switchToNextAppInGroup = "focusNextAppGroupApp"
-        case switchToPreviousAppInGroup = "focusPreviousAppGroupApp"
+        case switchToNextAppInGroup
+        case switchToPreviousAppInGroup
         case loopAppGroups
         case switchToRecentAppGroup
         case switchToPreviousAppGroup

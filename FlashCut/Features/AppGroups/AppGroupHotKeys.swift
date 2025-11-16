@@ -22,18 +22,18 @@ final class AppGroupHotKeys {
             getCycleAppGroupsHotKey(next: true)
         ] +
             appGroupRepository.appGroups
-            .compactMap { getActivateHotKey(for: $0) }
+            .compactMap { getOpenHotKey(for: $0) }
 
         return hotKeys.compactMap(\.self)
     }
 
-    private func getActivateHotKey(for appGroup: AppGroup) -> (AppHotKey, () -> ())? {
-        guard let shortcut = appGroup.activateShortcut else { return nil }
+    private func getOpenHotKey(for appGroup: AppGroup) -> (AppHotKey, () -> ())? {
+        guard let shortcut = appGroup.shortcut else { return nil }
 
         let action = { [weak self] in
             guard let self, let updatedAppGroup = appGroupRepository.findAppGroup(with: appGroup.id) else { return }
 
-            appGroupManager.activateAppGroup(updatedAppGroup)
+            appGroupManager.openAppGroup(updatedAppGroup)
         }
 
         return (shortcut, action)
@@ -48,7 +48,7 @@ final class AppGroupHotKeys {
         let action: () -> () = { [weak self] in
             guard let self else { return }
 
-            appGroupManager.activateAppGroup(
+            appGroupManager.openAppGroup(
                 next: next,
                 loop: appGroupSettings.loopAppGroups
             )
@@ -61,7 +61,7 @@ final class AppGroupHotKeys {
         guard let shortcut = appGroupSettings.switchToRecentAppGroup else { return nil }
 
         let action: () -> () = { [weak self] in
-            self?.appGroupManager.activateRecentAppGroup()
+            self?.appGroupManager.openRecentAppGroup()
         }
 
         return (shortcut, action)

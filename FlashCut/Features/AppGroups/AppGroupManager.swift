@@ -3,11 +3,11 @@ import Combine
 
 final class AppGroupManager: ObservableObject {
     // Minimal state for cycling and recent appGroup switching
-    private var lastActivatedAppGroup: AppGroup?
-    private var previousActivatedAppGroup: AppGroup?
+    private var lastAppGroup: AppGroup?
+    private var previousAppGroup: AppGroup?
 
-    // Track recently activated apps to find most recent when activating a group
-    private var recentlyActivatedApps: [String: Date] = [:] // bundleIdentifier -> timestamp
+    // Track recently opened apps to find most recent when opening a group
+    private var recentApps: [String: Date] = [:] // bundleIdentifier -> timestamp
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -21,10 +21,10 @@ final class AppGroupManager: ObservableObject {
         self.appGroupRepository = appGroupRepository
         self.appGroupSettings = settingsRepository.appGroupSettings
 
-        // Track app activations to find most recently used app in a group
+        // Track app opens to find most recently used app in a group
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
-            selector: #selector(handleAppActivation),
+            selector: #selector(handleAppOpen),
             name: NSWorkspace.didActivateApplicationNotification,
             object: nil
         )
@@ -34,19 +34,19 @@ final class AppGroupManager: ObservableObject {
         NSWorkspace.shared.notificationCenter.removeObserver(self)
     }
 
-    @objc private func handleAppActivation(_ notification: Notification) {
+    @objc private func handleAppOpen(_ notification: Notification) {
         guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
               let bundleId = app.bundleIdentifier else { return }
 
-        recentlyActivatedApps[bundleId] = Date()
+        recentApps[bundleId] = Date()
     }
 
     private func findApp(in appGroup: AppGroup) {
-        // Determine which app to launch: target app or most recently activated
+        // Determine which app to launch: target app or most recently opened
         let appToLaunch = appGroup.targetApp ?? appGroup.apps
             .max(by: { app1, app2 in
-                let time1 = recentlyActivatedApps[app1.bundleIdentifier] ?? .distantPast
-                let time2 = recentlyActivatedApps[app2.bundleIdentifier] ?? .distantPast
+                let time1 = recentApps[app1.bundleIdentifier] ?? .distantPast
+                let time2 = recentApps[app2.bundleIdentifier] ?? .distantPast
                 return time1 < time2
             })
 
@@ -68,7 +68,7 @@ final class AppGroupManager: ObservableObject {
             if let error {
                 Logger.log("Failed to launch \(app?.localizedName ?? "app"): \(error.localizedDescription)")
             } else if let app {
-                Logger.log("Successfully launched and activated: \(app.localizedName ?? "app")")
+                Logger.log("Successfully launched and opened: \(app.localizedName ?? "app")")
             }
         }
     }
@@ -76,31 +76,31 @@ final class AppGroupManager: ObservableObject {
 
 // MARK: - AppGroup Actions
 extension AppGroupManager {
-    func activateAppGroup(_ appGroup: AppGroup) {
+    func openAppGroup(_ appGroup: AppGroup) {
         Logger.log("")
         Logger.log("")
         Logger.log("APP GROUP: \(appGroup.name)")
         Logger.log("----")
 
         // Track previous for recent appGroup switching
-        if let last = lastActivatedAppGroup, last.id != appGroup.id {
-            previousActivatedAppGroup = last
+        if let last = lastAppGroup, last.id != appGroup.id {
+            previousAppGroup = last
         }
 
         // Remember for cycling
-        lastActivatedAppGroup = appGroup
+        lastAppGroup = appGroup
 
         // Launch an app in the group
         findApp(in: appGroup)
     }
 
-    func activateAppGroup(next: Bool, loop: Bool) {
+    func openAppGroup(next: Bool, loop: Bool) {
         let appGroups = appGroupRepository.appGroups
 
-        guard let currentAppGroup = lastActivatedAppGroup ?? appGroups.first else {
-            // No appGroup activated yet, activate first one
+        guard let currentAppGroup = lastAppGroup ?? appGroups.first else {
+            // No appGroup opened yet, open first one
             if let first = appGroups.first {
-                activateAppGroup(first)
+                openAppGroup(first)
             }
             return
         }
@@ -115,15 +115,15 @@ extension AppGroupManager {
 
         guard let selectedAppGroup, selectedAppGroup.id != currentAppGroup.id else { return }
 
-        activateAppGroup(selectedAppGroup)
+        openAppGroup(selectedAppGroup)
     }
 
-    func activateRecentAppGroup() {
+    func openRecentAppGroup() {
         // Alt+Tab-like behavior for app groups: switch to previous appGroup
-        guard let previous = previousActivatedAppGroup else { return }
+        guard let previous = previousAppGroup else { return }
         // Verify the appGroup still exists in the repository
         guard appGroupRepository.findAppGroup(with: previous.id) != nil else { return }
 
-        activateAppGroup(previous)
+        openAppGroup(previous)
     }
 }

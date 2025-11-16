@@ -31,8 +31,8 @@ struct AppGroupConfigurationView: View {
         VStack {
             HStack(spacing: 4) {
                 Text("On")
-                HotKeyControl(shortcut: $appGroup.activateShortcut)
-                    .onChange(of: appGroup.activateShortcut) { _, _ in
+                HotKeyControl(shortcut: $appGroup.shortcut)
+                    .onChange(of: appGroup.shortcut) { _, _ in
                         appGroupRepository.save()
                     }
             }
