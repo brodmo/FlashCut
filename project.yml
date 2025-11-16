@@ -12,9 +12,9 @@ packages:
   ShortcutRecorder:
     github: Kentzo/ShortcutRecorder
     from: 3.4.0
-  TOMLKit:
-    github: LebJe/TOMLKit
-    from: 0.6.0
+  Yams:
+    github: jpsim/Yams
+    from: 6.2.0
   Sparkle:
     github: sparkle-project/Sparkle
     from: 2.7.0
@@ -54,7 +54,7 @@ targets:
     dependencies:
       - sdk: ServiceManagement.framework
       - package: ShortcutRecorder
-      - package: TOMLKit
+      - package: Yams
       - package: Sparkle
 
     preBuildScripts:

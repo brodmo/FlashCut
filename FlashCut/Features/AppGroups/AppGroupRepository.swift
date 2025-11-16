@@ -2,11 +2,6 @@ import AppKit
 import Combine
 import Foundation
 
-// TOML requires a root dictionary, not an array
-private struct AppGroupsConfig: Codable {
-    var appGroups: [AppGroup]
-}
-
 final class AppGroupRepository: ObservableObject {
     @Published private(set) var appGroups: [AppGroup] = []
 
@@ -16,19 +11,35 @@ final class AppGroupRepository: ObservableObject {
 
     private let appGroupsSubject = PassthroughSubject<[AppGroup], Never>()
 
-    init() {
-        loadAppGroups()
-    }
+    init() {}
 
-    private func loadAppGroups() {
-        if let config = try? ConfigSerializer.deserialize(AppGroupsConfig.self, filename: "appgroups") {
-            appGroups = config.appGroups
+    func configure(settingsRepository: SettingsRepository) {
+        let minimalGroups = settingsRepository.getMinimalAppGroups()
+
+        // Convert MinimalAppGroups to AppGroups
+        appGroups = minimalGroups.compactMap { minimal in
+            // Resolve bundle IDs to MacApp objects (skip missing apps)
+            let apps = minimal.apps.compactMap { MacApp.fromBundleIdentifier($0) }
+
+            // Skip empty groups
+            guard !apps.isEmpty else { return nil }
+
+            // Resolve target app
+            let targetApp: MacApp? = if let targetBundleId = minimal.target {
+                MacApp.fromBundleIdentifier(targetBundleId)
+            } else {
+                nil
+            }
+
+            // Create AppGroup with fresh UUID
+            return AppGroup(
+                id: UUID(),
+                name: minimal.name,
+                shortcut: minimal.shortcut,
+                apps: apps,
+                targetApp: targetApp
+            )
         }
-    }
-
-    private func saveAppGroups() {
-        let config = AppGroupsConfig(appGroups: appGroups)
-        try? ConfigSerializer.serialize(filename: "appgroups", config)
     }
 
     func findAppGroup(with id: AppGroupID) -> AppGroup? {
@@ -84,8 +95,6 @@ final class AppGroupRepository: ObservableObject {
     }
 
     func save() {
-        saveAppGroups()
         appGroupsSubject.send(appGroups)
-        AppDependencies.shared.hotKeysManager.refresh()
     }
 }

@@ -66,4 +66,20 @@ extension MacApp {
     var isFinder: Bool {
         bundleIdentifier == "com.apple.finder"
     }
+
+    static func fromBundleIdentifier(_ bundleIdentifier: BundleId) -> MacApp? {
+        guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier),
+              let bundle = Bundle(url: appURL) else {
+            return nil
+        }
+
+        let name = bundle.localizedAppName ?? bundleIdentifier
+        let iconPath = bundle.iconPath
+
+        return MacApp(
+            name: name,
+            bundleIdentifier: bundleIdentifier,
+            iconPath: iconPath
+        )
+    }
 }

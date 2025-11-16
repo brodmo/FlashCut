@@ -1,5 +1,5 @@
 import Foundation
-import TOMLKit
+import Yams
 
 enum ConfigSerializer {
     static let configDirectory = FileManager.default
@@ -31,13 +31,13 @@ enum ConfigSerializer {
 }
 
 private extension ConfigSerializer {
-    static let encoder: ConfigEncoder = TOMLEncoder()
-    static let decoder: ConfigDecoder = TOMLDecoder()
+    static let encoder: ConfigEncoder = YAMLEncoder()
+    static let decoder: ConfigDecoder = YAMLDecoder()
 
     static func getUrl(for filename: String) -> URL {
         configDirectory
             .appendingPathComponent(filename)
-            .appendingPathExtension("toml")
+            .appendingPathExtension("yaml")
     }
 }
 
@@ -51,18 +51,18 @@ protocol ConfigDecoder {
     func decode<T>(_ type: T.Type, from data: Data) throws -> T where T: Decodable
 }
 
-// MARK: - TOML Conformance
+// MARK: - YAML Conformance
 
-extension TOMLEncoder: ConfigEncoder {
+extension YAMLEncoder: ConfigEncoder {
     func encode(_ value: some Encodable) throws -> Data {
-        let toml: String = try encode(value)
-        return toml.data(using: .utf8) ?? Data()
+        let yaml: String = try encode(value)
+        return yaml.data(using: .utf8) ?? Data()
     }
 }
 
-extension TOMLDecoder: ConfigDecoder {
+extension YAMLDecoder: ConfigDecoder {
     func decode<T>(_ type: T.Type, from data: Data) throws -> T where T: Decodable {
-        let toml = String(data: data, encoding: .utf8) ?? ""
-        return try decode(T.self, from: toml)
+        let yaml = String(data: data, encoding: .utf8) ?? ""
+        return try decode(T.self, from: yaml)
     }
 }

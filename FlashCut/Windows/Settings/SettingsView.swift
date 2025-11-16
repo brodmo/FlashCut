@@ -14,7 +14,7 @@ struct SettingsView: View {
                 HStack {
                     Text("Config location")
                     Spacer()
-                    Text("~/.config/flashcut/config.toml")
+                    Text("~/.config/flashcut/config.yaml")
                         .font(.callout)
                         .foregroundStyle(.secondary)
                     Button("Show in Finder") {

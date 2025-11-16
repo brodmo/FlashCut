@@ -19,11 +19,16 @@ struct AppDependencies {
     let autostartService = AutostartService()
 
     private init() {
+        self.appGroupRepository = AppGroupRepository()
         self.settingsRepository = SettingsRepository(
             generalSettings: generalSettings,
             appGroupSettings: appGroupSettings
         )
-        self.appGroupRepository = AppGroupRepository()
+
+        // Wire up app group repository with settings repository
+        appGroupRepository.configure(settingsRepository: settingsRepository)
+        settingsRepository.setAppGroupRepository(appGroupRepository)
+
         self.appGroupManager = AppGroupManager(
             appGroupRepository: appGroupRepository,
             settingsRepository: settingsRepository
