@@ -79,8 +79,6 @@ struct AppListView<TrailingButtons: View>: View {
         )
         group.apps.append(newApp)
         repository.save()
-
-        appGroupManager.activateAppGroupIfActive(group.id)
     }
 
     private func deleteApps(_ apps: Set<MacApp>, from group: AppGroup) {
@@ -93,7 +91,5 @@ struct AppListView<TrailingButtons: View>: View {
             group.apps.removeAll { $0 == app }
         }
         repository.save()
-
-        appGroupManager.activateAppGroupIfActive(group.id)
     }
 }

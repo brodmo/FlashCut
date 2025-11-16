@@ -76,7 +76,7 @@ final class AppGroupManager: ObservableObject {
 
 // MARK: - AppGroup Actions
 extension AppGroupManager {
-    func activateAppGroup(_ appGroup: AppGroup, setFocus: Bool) {
+    func activateAppGroup(_ appGroup: AppGroup) {
         Logger.log("")
         Logger.log("")
         Logger.log("APP GROUP: \(appGroup.name)")
@@ -90,10 +90,8 @@ extension AppGroupManager {
         // Remember for cycling
         lastActivatedAppGroup = appGroup
 
-        // Launch an app in the group if requested
-        if setFocus {
-            findApp(in: appGroup)
-        }
+        // Launch an app in the group
+        findApp(in: appGroup)
     }
 
     func activateAppGroup(next: Bool, loop: Bool) {
@@ -102,7 +100,7 @@ extension AppGroupManager {
         guard let currentAppGroup = lastActivatedAppGroup ?? appGroups.first else {
             // No appGroup activated yet, activate first one
             if let first = appGroups.first {
-                activateAppGroup(first, setFocus: true)
+                activateAppGroup(first)
             }
             return
         }
@@ -117,7 +115,7 @@ extension AppGroupManager {
 
         guard let selectedAppGroup, selectedAppGroup.id != currentAppGroup.id else { return }
 
-        activateAppGroup(selectedAppGroup, setFocus: true)
+        activateAppGroup(selectedAppGroup)
     }
 
     func activateRecentAppGroup() {
@@ -126,15 +124,6 @@ extension AppGroupManager {
         // Verify the appGroup still exists in the repository
         guard appGroupRepository.findAppGroup(with: previous.id) != nil else { return }
 
-        activateAppGroup(previous, setFocus: true)
-    }
-
-    func activateAppGroupIfActive(_ appGroupId: AppGroupID) {
-        // Simplified: just re-activate if it was the last one
-        guard let lastActivated = lastActivatedAppGroup, lastActivated.id == appGroupId else { return }
-        // Verify the appGroup still exists in the repository
-        guard appGroupRepository.findAppGroup(with: appGroupId) != nil else { return }
-
-        activateAppGroup(lastActivated, setFocus: false)
+        activateAppGroup(previous)
     }
 }

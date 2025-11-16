@@ -33,7 +33,7 @@ final class AppGroupHotKeys {
         let action = { [weak self] in
             guard let self, let updatedAppGroup = appGroupRepository.findAppGroup(with: appGroup.id) else { return }
 
-            appGroupManager.activateAppGroup(updatedAppGroup, setFocus: true)
+            appGroupManager.activateAppGroup(updatedAppGroup)
         }
 
         return (shortcut, action)

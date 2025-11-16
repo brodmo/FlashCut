@@ -77,9 +77,6 @@ struct AppGroupCell: View {
             to: appGroup.id
         )
 
-        appGroupManager.activateAppGroupIfActive(sourceAppGroupId)
-        appGroupManager.activateAppGroupIfActive(appGroup.id)
-
         return true
     }
 }
