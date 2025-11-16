@@ -35,7 +35,10 @@ struct AppGroupCell: View {
             .onAppear {
                 visibleName = appGroup.name
                 if isNew {
-                    isEditing = true
+                    // delay editing to sync with selection
+                    DispatchQueue.main.async {
+                        isEditing = true
+                    }
                 }
             }
             .onChange(of: isEditing) { oldValue, _ in

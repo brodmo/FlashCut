@@ -59,8 +59,8 @@ struct MainView: View {
                         onNewIsDone: {
                             newAppGroup = nil
                             if appGroup.name.isEmpty {
-                                repository.deleteAppGroup(id: appGroup.id)
                                 selectedAppGroups = []
+                                repository.deleteAppGroup(id: appGroup.id)
                             }
                         }
                     )
@@ -77,7 +77,10 @@ struct MainView: View {
                     let newGroup = AppGroup(name: "")
                     newAppGroup = newGroup
                     repository.addAppGroup(newGroup)
-                    selectedAppGroups = [newGroup]
+                    // delay selection so cell is properly rendered first
+                    DispatchQueue.main.async {
+                        selectedAppGroups = [newGroup]
+                    }
                 }, label: {
                     Image(systemName: "plus")
                         .frame(height: 16)
