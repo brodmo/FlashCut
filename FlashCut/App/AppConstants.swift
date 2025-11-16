@@ -2,7 +2,7 @@ import AppKit
 
 enum AppConstants {
     static let mostRecentOption = MacApp(
-        name: "Most Recent",
+        name: "(Most Recent)",
         bundleIdentifier: "flashcut.most-recent",
         iconPath: nil
     )

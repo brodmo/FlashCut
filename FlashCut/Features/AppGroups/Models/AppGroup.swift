@@ -11,7 +11,6 @@ class AppGroup: Identifiable, Codable, Hashable {
         case activateShortcut = "shortcut"
         case apps
         case targetApp = "target"
-        case openAppsOnActivation
     }
 
     var id: AppGroupID
@@ -19,22 +18,19 @@ class AppGroup: Identifiable, Codable, Hashable {
     var activateShortcut: AppHotKey?
     var apps: [MacApp]
     var targetApp: MacApp?
-    var openAppsOnActivation: Bool?
 
     init(
         id: AppGroupID = UUID(),
         name: String,
         activateShortcut: AppHotKey? = nil,
         apps: [MacApp] = [],
-        targetApp: MacApp? = nil,
-        openAppsOnActivation: Bool? = nil
+        targetApp: MacApp? = nil
     ) {
         self.id = id
         self.name = name
         self.activateShortcut = activateShortcut
         self.apps = apps
         self.targetApp = targetApp
-        self.openAppsOnActivation = openAppsOnActivation
     }
 
     // MARK: - Hashable
@@ -58,7 +54,6 @@ class AppGroup: Identifiable, Codable, Hashable {
         self.activateShortcut = try container.decodeIfPresent(AppHotKey.self, forKey: .activateShortcut)
         self.apps = try container.decode([MacApp].self, forKey: .apps)
         self.targetApp = try container.decodeIfPresent(MacApp.self, forKey: .targetApp)
-        self.openAppsOnActivation = try container.decodeIfPresent(Bool.self, forKey: .openAppsOnActivation)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -68,17 +63,5 @@ class AppGroup: Identifiable, Codable, Hashable {
         try container.encodeIfPresent(activateShortcut, forKey: .activateShortcut)
         try container.encode(apps, forKey: .apps)
         try container.encodeIfPresent(targetApp, forKey: .targetApp)
-        try container.encodeIfPresent(openAppsOnActivation, forKey: .openAppsOnActivation)
-    }
-}
-
-extension AppGroup {
-    /// Check if any apps from this appGroup are currently running
-    var hasRunningApps: Bool {
-        let runningBundleIds = NSWorkspace.shared.runningRegularApps
-            .compactMap(\.bundleIdentifier)
-            .asSet
-
-        return apps.contains { runningBundleIds.contains($0.bundleIdentifier) }
     }
 }

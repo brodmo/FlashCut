@@ -11,7 +11,6 @@ struct AppGroupConfigurationView: View {
             get: { appGroup.targetApp ?? AppConstants.mostRecentOption },
             set: { newValue in
                 appGroup.targetApp = newValue == AppConstants.mostRecentOption ? nil : newValue
-                appGroup.openAppsOnActivation = newValue == AppConstants.mostRecentOption ? nil : true
                 appGroupRepository.save()
             }
         )

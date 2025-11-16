@@ -41,27 +41,18 @@ final class AppGroupManager: ObservableObject {
         recentlyActivatedApps[bundleId] = Date()
     }
 
-    private func findApp(in appGroup: AppGroup) -> NSRunningApplication? {
-        let runningApps = NSWorkspace.shared.runningApplications
-            .filter { appGroup.apps.containsApp($0) }
-
-        // If appGroup has a preferred target app, use that
-        if let preferredApp = appGroup.targetApp {
-            if let app = runningApps.find(preferredApp) {
-                return app
-            }
-            // If target app is not running, launch it (will activate automatically)
-            launchApp(preferredApp)
-            return nil
-        }
-
-        // Otherwise find the most recently activated app from the group
-        return runningApps
+    private func findApp(in appGroup: AppGroup) {
+        // Determine which app to launch: target app or most recently activated
+        let appToLaunch = appGroup.targetApp ?? appGroup.apps
             .max(by: { app1, app2 in
-                let time1 = app1.bundleIdentifier.flatMap { recentlyActivatedApps[$0] } ?? .distantPast
-                let time2 = app2.bundleIdentifier.flatMap { recentlyActivatedApps[$0] } ?? .distantPast
+                let time1 = recentlyActivatedApps[app1.bundleIdentifier] ?? .distantPast
+                let time2 = recentlyActivatedApps[app2.bundleIdentifier] ?? .distantPast
                 return time1 < time2
             })
+
+        if let appToLaunch {
+            launchApp(appToLaunch)
+        }
     }
 
     private func launchApp(_ app: MacApp) {
@@ -99,12 +90,9 @@ extension AppGroupManager {
         // Remember for cycling
         lastActivatedAppGroup = appGroup
 
-        // Simply activate an app in the group if requested
-        // (findApp will launch the primary app if needed)
+        // Launch an app in the group if requested
         if setFocus {
-            let appToActivate = findApp(in: appGroup)
-            Logger.log("ACTIVATE: \(appToActivate?.localizedName ?? "none")")
-            appToActivate?.activate()
+            findApp(in: appGroup)
         }
     }
 
