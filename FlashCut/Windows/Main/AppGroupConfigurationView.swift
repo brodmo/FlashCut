@@ -30,14 +30,14 @@ struct AppGroupConfigurationView: View {
     private var configuration: some View {
         VStack {
             HStack(spacing: 4) {
-                Text("On")
+                Text("On").frame(width: 40, alignment: .leading)
                 HotKeyControl(shortcut: $appGroup.shortcut)
                     .onChange(of: appGroup.shortcut) { _, _ in
                         appGroupRepository.save()
                     }
             }
             HStack(spacing: 4) {
-                Text("Open")
+                Text("Open").frame(width: 40, alignment: .leading)
                 Picker("", selection: targetAppBinding) {
                     let targetAppOptions = [AppConstants.mostRecentOption] + appGroup.apps
                     ForEach(targetAppOptions, id: \.self) { app in
