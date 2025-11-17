@@ -1,18 +1,16 @@
 import AppKit
 import Foundation
 
-typealias AppGroupID = UUID
-
 @Observable
 class AppGroup: Identifiable, Hashable {
-    var id: AppGroupID
+    var id: UUID
     var name: String
     var shortcut: AppHotKey?
     var apps: [MacApp]
     var targetApp: MacApp?
 
     init(
-        id: AppGroupID = UUID(),
+        id: UUID = UUID(),
         name: String,
         shortcut: AppHotKey? = nil,
         apps: [MacApp] = [],

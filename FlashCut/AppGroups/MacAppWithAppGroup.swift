@@ -3,7 +3,7 @@ import SwiftUI
 
 struct MacAppWithAppGroup: Hashable, Codable {
     var app: MacApp
-    var appGroupId: AppGroupID
+    var appGroupId: UUID
 }
 
 extension MacAppWithAppGroup: Transferable {

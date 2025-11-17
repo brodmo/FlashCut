@@ -17,7 +17,7 @@ final class AppGroupRepository: ObservableObject {
         self.appGroups = configRepository.config.appGroups.map { $0.toAppGroup() }
     }
 
-    func findAppGroup(with id: AppGroupID) -> AppGroup? {
+    func findAppGroup(with id: UUID) -> AppGroup? {
         appGroups.first { $0.id == id }
     }
 
@@ -26,7 +26,7 @@ final class AppGroupRepository: ObservableObject {
         save()
     }
 
-    func deleteAppGroup(id: AppGroupID) {
+    func deleteAppGroup(id: UUID) {
         appGroups.removeAll { $0.id == id }
         save()
     }
@@ -51,7 +51,7 @@ final class AppGroupRepository: ObservableObject {
         save()
     }
 
-    func moveApps(_ apps: [MacApp], from sourceAppGroupId: AppGroupID, to targetAppGroupId: AppGroupID) {
+    func moveApps(_ apps: [MacApp], from sourceAppGroupId: UUID, to targetAppGroupId: UUID) {
         guard let sourceAppGroup = appGroups.first(where: { $0.id == sourceAppGroupId }),
               let targetAppGroup = appGroups.first(where: { $0.id == targetAppGroupId }) else { return }
 

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AppCell: View {
-    let appGroupId: AppGroupID
+    let appGroupId: UUID
     let app: MacApp
 
     var body: some View {
