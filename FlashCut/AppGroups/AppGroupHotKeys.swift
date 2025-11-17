@@ -12,7 +12,7 @@ final class AppGroupHotKeys {
     ) {
         self.appGroupManager = appGroupManager
         self.appGroupRepository = appGroupRepository
-        self.settings = settingsRepository.settings
+        self.settings = settingsRepository.config.settings
     }
 
     func getHotKeys() -> [(AppHotKey, () -> ())] {

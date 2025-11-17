@@ -27,33 +27,14 @@ struct MinimalAppGroup: Codable {
     }
 }
 
-@Observable // todo kinda inconsistent :(
-final class Settings: Codable {
-    var checkForUpdatesAutomatically: Bool {
-        didSet {
-            UpdatesManager.shared.updaterController.updater.automaticallyChecksForUpdates = checkForUpdatesAutomatically
-        }
-    }
+struct Settings: Codable {
+    var checkForUpdatesAutomatically: Bool = false
 
     var lastAppGroup: AppHotKey?
     var cycleAppsInGroup: AppHotKey?
-
-    init(checkForUpdatesAutomatically: Bool = false, lastAppGroup: AppHotKey? = nil, cycleAppsInGroup: AppHotKey? = nil) {
-        self.checkForUpdatesAutomatically = checkForUpdatesAutomatically
-        self.lastAppGroup = lastAppGroup
-        self.cycleAppsInGroup = cycleAppsInGroup
-    }
 }
 
 struct Config: Codable {
-    var settings: Settings
-    var appGroups: [MinimalAppGroup]
-
-    init(
-        settings: Settings = Settings(),
-        appGroups: [MinimalAppGroup] = []
-    ) {
-        self.settings = settings
-        self.appGroups = appGroups
-    }
+    var settings: Settings = .init()
+    var appGroups: [MinimalAppGroup] = []
 }

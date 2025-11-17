@@ -1,28 +1,37 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Bindable var settings = AppDependencies.shared.configRepository.settings
-    @State var isAutostartEnabled = false
+    @State private var configRepository = AppDependencies.shared.configRepository
+    private let autostartService = AppDependencies.shared.autostartService
 
     var body: some View {
         Form {
             Section("General") {
-                Toggle("Launch at startup", isOn: $isAutostartEnabled)
-                Toggle("Check for updates automatically", isOn: $settings.checkForUpdatesAutomatically)
-                    .onChange(of: settings.checkForUpdatesAutomatically) {
-                        AppDependencies.shared.configRepository.save()
+                Toggle("Launch at startup", isOn: .init(
+                    get: { autostartService.isLaunchAtLoginEnabled },
+                    set: { enabled in
+                        if enabled {
+                            autostartService.enableLaunchAtLogin()
+                        } else {
+                            autostartService.disableLaunchAtLogin()
+                        }
                     }
+                ))
+                Toggle("Check for updates automatically", isOn: .init(
+                    get: { configRepository.config.settings.checkForUpdatesAutomatically },
+                    set: { configRepository.setCheckForUpdatesAutomatically(to: $0) }
+                ))
             }
 
             Section("Shortcuts") {
-                hotkey("Cycle apps in group", for: $settings.cycleAppsInGroup)
-                    .onChange(of: settings.cycleAppsInGroup) {
-                        AppDependencies.shared.configRepository.save()
-                    }
-                hotkey("Switch to last app group", for: $settings.lastAppGroup)
-                    .onChange(of: settings.lastAppGroup) {
-                        AppDependencies.shared.configRepository.save()
-                    }
+                hotkey("Cycle apps in group", for: .init(
+                    get: { configRepository.config.settings.cycleAppsInGroup },
+                    set: { configRepository.setCycleAppsInGroup(to: $0) }
+                ))
+                hotkey("Switch to last app group", for: .init(
+                    get: { configRepository.config.settings.lastAppGroup },
+                    set: { configRepository.setLastAppGroup(to: $0) }
+                ))
             }
 
             Section("About") {
@@ -53,16 +62,6 @@ struct SettingsView: View {
         }
         .buttonStyle(.accessoryBarAction)
         .formStyle(.grouped)
-        .onAppear {
-            isAutostartEnabled = AppDependencies.shared.autostartService.isLaunchAtLoginEnabled
-        }
-        .onChange(of: isAutostartEnabled) { _, enabled in
-            if enabled {
-                AppDependencies.shared.autostartService.enableLaunchAtLogin()
-            } else {
-                AppDependencies.shared.autostartService.disableLaunchAtLogin()
-            }
-        }
         .frame(width: 450)
         .fixedSize(horizontal: false, vertical: true)
     }

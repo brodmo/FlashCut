@@ -10,12 +10,11 @@ final class AppGroupRepository: ObservableObject {
     }
 
     private let appGroupsSubject = PassthroughSubject<[AppGroup], Never>()
+    private let configRepository: ConfigRepository
 
-    init() {}
-
-    func configure(settingsRepository: ConfigRepository) {
-        let minimalGroups = settingsRepository.getMinimalAppGroups()
-        appGroups = minimalGroups.map { $0.toAppGroup() }
+    init(configRepository: ConfigRepository) {
+        self.configRepository = configRepository
+        self.appGroups = configRepository.config.appGroups.map { $0.toAppGroup() }
     }
 
     func findAppGroup(with id: AppGroupID) -> AppGroup? {
@@ -71,6 +70,7 @@ final class AppGroupRepository: ObservableObject {
     }
 
     func save() {
+        configRepository.updateAppGroups(appGroups)
         appGroupsSubject.send(appGroups)
     }
 }
