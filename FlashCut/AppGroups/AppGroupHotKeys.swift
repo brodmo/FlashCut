@@ -8,7 +8,7 @@ final class AppGroupHotKeys {
     init(
         appGroupManager: AppGroupManager,
         appGroupRepository: AppGroupRepository,
-        settingsRepository: SettingsRepository
+        settingsRepository: ConfigRepository
     ) {
         self.appGroupManager = appGroupManager
         self.appGroupRepository = appGroupRepository

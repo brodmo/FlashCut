@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @StateObject var settings = AppDependencies.shared.settings
+    @Bindable var settings = AppDependencies.shared.configRepository.settings
     @State var isAutostartEnabled = false
 
     var body: some View {
@@ -9,11 +9,20 @@ struct SettingsView: View {
             Section("General") {
                 Toggle("Launch at startup", isOn: $isAutostartEnabled)
                 Toggle("Check for updates automatically", isOn: $settings.checkForUpdatesAutomatically)
+                    .onChange(of: settings.checkForUpdatesAutomatically) {
+                        AppDependencies.shared.configRepository.save()
+                    }
             }
 
             Section("Shortcuts") {
                 hotkey("Cycle apps in group", for: $settings.cycleAppsInGroup)
+                    .onChange(of: settings.cycleAppsInGroup) {
+                        AppDependencies.shared.configRepository.save()
+                    }
                 hotkey("Switch to last app group", for: $settings.lastAppGroup)
+                    .onChange(of: settings.lastAppGroup) {
+                        AppDependencies.shared.configRepository.save()
+                    }
             }
 
             Section("About") {

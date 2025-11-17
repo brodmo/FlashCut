@@ -12,14 +12,12 @@ final class AppGroupManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     private let appGroupRepository: AppGroupRepository
-    private let appGroupSettings: AppGroupSettings
 
     init(
         appGroupRepository: AppGroupRepository,
-        settingsRepository: SettingsRepository
+        settingsRepository: ConfigRepository
     ) {
         self.appGroupRepository = appGroupRepository
-        self.appGroupSettings = settingsRepository.appGroupSettings
 
         // Track app opens to find most recently used app in a group
         NSWorkspace.shared.notificationCenter.addObserver(

@@ -13,30 +13,9 @@ final class AppGroupRepository: ObservableObject {
 
     init() {}
 
-    func configure(settingsRepository: SettingsRepository) {
+    func configure(settingsRepository: ConfigRepository) {
         let minimalGroups = settingsRepository.getMinimalAppGroups()
-
-        // Convert MinimalAppGroups to AppGroups
-        appGroups = minimalGroups.map { minimal in
-            // Resolve bundle IDs to MacApp objects (skip missing apps)
-            let apps = minimal.apps.compactMap { MacApp.fromBundleIdentifier($0) }
-
-            // Resolve target app
-            let targetApp: MacApp? = if let targetBundleId = minimal.target {
-                MacApp.fromBundleIdentifier(targetBundleId)
-            } else {
-                nil
-            }
-
-            // Create AppGroup with fresh UUID
-            return AppGroup(
-                id: UUID(),
-                name: minimal.name,
-                shortcut: minimal.shortcut,
-                apps: apps,
-                targetApp: targetApp
-            )
-        }
+        appGroups = minimalGroups.map { $0.toAppGroup() }
     }
 
     func findAppGroup(with id: AppGroupID) -> AppGroup? {

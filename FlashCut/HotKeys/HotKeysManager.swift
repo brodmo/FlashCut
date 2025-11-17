@@ -10,13 +10,13 @@ final class HotKeysManager {
     private let hotKeysMonitor: HotKeysMonitorProtocol
     private let appGroupHotKeys: AppGroupHotKeys
     private let appManager: AppManager
-    private let settingsRepository: SettingsRepository
+    private let settingsRepository: ConfigRepository
 
     init(
         hotKeysMonitor: HotKeysMonitorProtocol,
         appGroupHotKeys: AppGroupHotKeys,
         appManager: AppManager,
-        settingsRepository: SettingsRepository
+        settingsRepository: ConfigRepository
     ) {
         self.hotKeysMonitor = hotKeysMonitor
         self.appGroupHotKeys = appGroupHotKeys
