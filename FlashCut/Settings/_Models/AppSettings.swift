@@ -8,9 +8,8 @@ struct MinimalAppGroup: Codable {
 struct AppSettings: Codable {
     enum CodingKeys: String, CodingKey {
         case checkForUpdatesAutomatically
-        case recentAppGroup
-        case nextAppInGroup
-        case previousAppInGroup
+        case lastAppGroup
+        case cycleAppsInGroup
         case appGroups
     }
 
@@ -18,8 +17,7 @@ struct AppSettings: Codable {
     var checkForUpdatesAutomatically: Bool?
 
     // App Groups
-    var recentAppGroup: AppHotKey?
-    var nextAppInGroup: AppHotKey?
-    var previousAppInGroup: AppHotKey?
+    var lastAppGroup: AppHotKey?
+    var cycleAppsInGroup: AppHotKey?
     var appGroups: [MinimalAppGroup]?
 }

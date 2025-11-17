@@ -13,8 +13,8 @@ struct SettingsView: View {
             }
 
             Section("Shortcuts") {
-                hotkey("Cycle apps in group", for: $appGroupSettings.nextAppInGroup)
-                hotkey("Open previous app group", for: $appGroupSettings.recentAppGroup)
+                hotkey("Cycle apps in group", for: $appGroupSettings.cycleAppsInGroup)
+                hotkey("Switch to last app group", for: $appGroupSettings.lastAppGroup)
             }
 
             Section("About") {

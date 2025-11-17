@@ -2,9 +2,8 @@ import Combine
 import Foundation
 
 final class AppGroupSettings: ObservableObject {
-    @Published var recentAppGroup: AppHotKey?
-    @Published var nextAppInGroup: AppHotKey?
-    @Published var previousAppInGroup: AppHotKey?
+    @Published var lastAppGroup: AppHotKey?
+    @Published var cycleAppsInGroup: AppHotKey?
 
     private var observer: AnyCancellable?
     private let updateSubject = PassthroughSubject<(), Never>()
@@ -13,9 +12,8 @@ final class AppGroupSettings: ObservableObject {
 
     private func observe() {
         observer = Publishers.MergeMany(
-            $recentAppGroup.settingsPublisher(),
-            $nextAppInGroup.settingsPublisher(),
-            $previousAppInGroup.settingsPublisher()
+            $lastAppGroup.settingsPublisher(),
+            $cycleAppsInGroup.settingsPublisher()
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] in self?.updateSubject.send() }
@@ -29,15 +27,13 @@ extension AppGroupSettings: SettingsProtocol {
 
     func load(from appSettings: AppSettings) {
         observer = nil
-        recentAppGroup = appSettings.recentAppGroup
-        nextAppInGroup = appSettings.nextAppInGroup
-        previousAppInGroup = appSettings.previousAppInGroup
+        lastAppGroup = appSettings.lastAppGroup
+        cycleAppsInGroup = appSettings.cycleAppsInGroup
         observe()
     }
 
     func update(_ appSettings: inout AppSettings) {
-        appSettings.recentAppGroup = recentAppGroup
-        appSettings.nextAppInGroup = nextAppInGroup
-        appSettings.previousAppInGroup = previousAppInGroup
+        appSettings.lastAppGroup = lastAppGroup
+        appSettings.cycleAppsInGroup = cycleAppsInGroup
     }
 }

@@ -75,8 +75,7 @@ Manages cycling between apps within the same group.
 **Stateless:** Uses current app to determine context
 
 **Key Methods:**
-- `nextAppGroupApp()` - Switch to next app in current group
-- `previousAppGroupApp()` - Switch to previous app in current group
+- `cycleAppsInGroup()` - Cycle to next app in current group
 - `getCurrentAppIndex()` - Find current app's position in its group
 
 #### HotKeysManager

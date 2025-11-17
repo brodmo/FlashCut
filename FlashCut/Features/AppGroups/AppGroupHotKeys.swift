@@ -16,7 +16,7 @@ final class AppGroupHotKeys {
     }
 
     func getHotKeys() -> [(AppHotKey, () -> ())] {
-        let hotKeys = [getRecentAppGroupHotKey()] +
+        let hotKeys = [getLastAppGroupHotKey()] +
             appGroupRepository.appGroups
             .compactMap { getOpenHotKey(for: $0) }
 
@@ -35,11 +35,11 @@ final class AppGroupHotKeys {
         return (shortcut, action)
     }
 
-    private func getRecentAppGroupHotKey() -> (AppHotKey, () -> ())? {
-        guard let shortcut = appGroupSettings.recentAppGroup else { return nil }
+    private func getLastAppGroupHotKey() -> (AppHotKey, () -> ())? {
+        guard let shortcut = appGroupSettings.lastAppGroup else { return nil }
 
         let action: () -> () = { [weak self] in
-            self?.appGroupManager.openRecentAppGroup()
+            self?.appGroupManager.openLastAppGroup()
         }
 
         return (shortcut, action)

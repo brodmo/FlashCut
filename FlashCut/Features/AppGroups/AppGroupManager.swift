@@ -94,7 +94,7 @@ extension AppGroupManager {
         findApp(in: appGroup)
     }
 
-    func openRecentAppGroup() {
+    func openLastAppGroup() {
         // Alt+Tab-like behavior for app groups: switch to previous appGroup
         guard let previous = previousAppGroup else { return }
         // Verify the appGroup still exists in the repository

@@ -20,12 +20,11 @@ final class AppManager {
 
     func getHotKeys() -> [(AppHotKey, () -> ())] {
         [
-            settings.nextAppInGroup.flatMap { ($0, nextAppGroupApp) },
-            settings.previousAppInGroup.flatMap { ($0, previousAppGroupApp) }
+            settings.cycleAppsInGroup.flatMap { ($0, cycleAppsInGroup) }
         ].compactMap { $0 }
     }
 
-    func nextAppGroupApp() {
+    func cycleAppsInGroup() {
         guard let (index, apps) = getCurrentAppIndex() else { return }
 
         let appsQueue = apps.dropFirst(index + 1) + apps.prefix(index)
@@ -36,22 +35,6 @@ final class AppManager {
 
         NSWorkspace.shared.runningApplications
             .find(nextApp)?
-            .activate()
-    }
-
-    func previousAppGroupApp() {
-        guard let (index, apps) = getCurrentAppIndex() else { return }
-
-        let runningApps = NSWorkspace.shared.runningApplications
-            .compactMap(\.bundleIdentifier)
-            .asSet
-        let prefixApps = apps.prefix(index).reversed()
-        let suffixApps = apps.suffix(apps.count - index - 1).reversed()
-        let appsQueue = prefixApps + Array(suffixApps)
-        let previousApp = appsQueue.first { app in runningApps.contains(app.bundleIdentifier) }
-
-        NSWorkspace.shared.runningApplications
-            .find(previousApp)?
             .activate()
     }
 

@@ -76,7 +76,7 @@ Let's trace: **User presses Cmd+1 to activate "Browsers" group**
    ↓
 3. HotKeysManager calls action from AppManager.getHotKeys()
    ↓
-4. AppManager.nextAppGroupApp()
+4. AppManager.cycleAppsInGroup()
    - Gets current app (Safari) via NSWorkspace.frontmostApplication
    - Finds app group containing Safari (stateless lookup)
    - Gets apps[] from that group
@@ -264,14 +264,12 @@ GeneralSettings (48 lines)
   - checkForUpdatesAutomatically
 
 AppManagerSettings (46 lines)
-  - switchToNextAppInGroup
-  - switchToPreviousAppInGroup
+  - (removed, settings consolidated)
 
 AppGroupSettings (54 lines)
   - loopAppGroups
-  - switchToRecentAppGroup
-  - switchToPreviousAppGroup
-  - switchToNextAppGroup
+  - cycleAppsInGroup
+  - lastAppGroup
 
 SettingsRepository (73 lines)
   - Coordinates above 3
