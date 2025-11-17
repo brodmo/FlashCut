@@ -17,12 +17,9 @@ final class AppGroupRepository: ObservableObject {
         let minimalGroups = settingsRepository.getMinimalAppGroups()
 
         // Convert MinimalAppGroups to AppGroups
-        appGroups = minimalGroups.compactMap { minimal in
+        appGroups = minimalGroups.map { minimal in
             // Resolve bundle IDs to MacApp objects (skip missing apps)
             let apps = minimal.apps.compactMap { MacApp.fromBundleIdentifier($0) }
-
-            // Skip empty groups
-            guard !apps.isEmpty else { return nil }
 
             // Resolve target app
             let targetApp: MacApp? = if let targetBundleId = minimal.target {
