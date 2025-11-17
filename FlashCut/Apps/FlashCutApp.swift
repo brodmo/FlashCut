@@ -7,8 +7,6 @@ struct FlashCutApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.openWindow) private var openWindow
 
-    @State private var cancellables = Set<AnyCancellable>()
-
     init() {
         // Set faster tooltip delay (500ms instead of default ~1000ms)
         UserDefaults.standard.set(500, forKey: "NSInitialToolTipDelay")
@@ -18,7 +16,6 @@ struct FlashCutApp: App {
         Window("⚡ FlashCut v\(AppConstants.version)", id: "main") {
             MainView()
                 .onAppear {
-                    setupNotificationHandlers()
                     showDockIcon()
                 }
                 .onDisappear {
@@ -39,17 +36,6 @@ struct FlashCutApp: App {
         }
         .windowResizability(.contentSize)
         .defaultPosition(.center)
-    }
-
-    private func setupNotificationHandlers() {
-        // Listen for hotkey trigger to open window
-        NotificationCenter.default
-            .publisher(for: .openMainWindow)
-            .sink { [self] _ in
-                showDockIcon()
-                openWindow(id: "main")
-            }
-            .store(in: &cancellables)
     }
 
     private func showDockIcon() {

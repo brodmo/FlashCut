@@ -9,8 +9,6 @@ final class AppGroupManager: ObservableObject {
     // Track recently opened apps to find most recent when opening a group
     private var recentApps: [String: Date] = [:] // bundleIdentifier -> timestamp
 
-    private var cancellables = Set<AnyCancellable>()
-
     private let appGroupRepository: AppGroupRepository
 
     init(

@@ -66,7 +66,6 @@ final class AppGroupRepository: ObservableObject {
         targetAppGroup.apps.append(contentsOf: appsToAdd)
 
         save()
-        NotificationCenter.default.post(name: .appsListChanged, object: nil)
     }
 
     func save() {

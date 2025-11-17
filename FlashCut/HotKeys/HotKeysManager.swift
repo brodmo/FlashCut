@@ -71,6 +71,7 @@ final class HotKeysManager {
     }
 
     private func observe() {
+        // Update hotkeys when keyboard layout is changed
         DistributedNotificationCenter.default()
             .publisher(for: .init(rawValue: kTISNotifySelectedKeyboardInputSourceChanged as String))
             .sink { [weak self] _ in
