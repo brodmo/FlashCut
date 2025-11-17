@@ -19,11 +19,6 @@ struct AppGroupConfigurationView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0.0) {
             configuration
-
-            if appGroup.apps.contains(where: \.bundleIdentifier.isEmpty) {
-                Text("Could not migrate some apps. Please re-add them to fix the problem.")
-                    .foregroundColor(.errorRed)
-            }
         }
     }
 

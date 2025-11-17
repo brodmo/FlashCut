@@ -24,33 +24,10 @@ struct MacApp: Codable, Hashable, Equatable {
     }
 
     init(from decoder: any Decoder) throws {
-        if let app = try? decoder.singleValueContainer().decode(String.self) {
-            // V1 - migration
-            let runningApp = NSWorkspace.shared.runningApplications
-                .first { $0.localizedName == app }
-
-            self.name = app
-
-            if let runningApp {
-                self.bundleIdentifier = runningApp.bundleIdentifier ?? ""
-                self.iconPath = runningApp.iconPath
-            } else if let bundle = Bundle(path: "/Applications/\(app).app") {
-                self.bundleIdentifier = bundle.bundleIdentifier ?? ""
-                self.iconPath = bundle.iconPath
-            } else if let bundle = Bundle(path: "/System/Applications/\(app).app") {
-                self.bundleIdentifier = bundle.bundleIdentifier ?? ""
-                self.iconPath = bundle.iconPath
-            } else {
-                self.bundleIdentifier = ""
-                self.iconPath = nil
-            }
-        } else {
-            // V2
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.name = try container.decode(String.self, forKey: .name)
-            self.bundleIdentifier = try container.decode(String.self, forKey: .bundleIdentifier)
-            self.iconPath = try container.decodeIfPresent(String.self, forKey: .iconPath)
-        }
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.bundleIdentifier = try container.decode(String.self, forKey: .bundleIdentifier)
+        self.iconPath = try container.decodeIfPresent(String.self, forKey: .iconPath)
     }
 
     static func == (lhs: MacApp, rhs: MacApp) -> Bool {
@@ -73,7 +50,7 @@ extension MacApp {
             return nil
         }
 
-        let name = bundle.localizedAppName ?? bundleIdentifier
+        let name = bundle.localizedAppName
         let iconPath = bundle.iconPath
 
         return MacApp(
