@@ -18,12 +18,6 @@ final class AppManager {
         self.settings = settings
     }
 
-    func getHotKeys() -> [(AppHotKey, () -> ())] {
-        [
-            settings.cycleAppsInGroup.flatMap { ($0, cycleAppsInGroup) }
-        ].compactMap { $0 }
-    }
-
     func cycleAppsInGroup() {
         guard let (index, apps) = getCurrentAppIndex() else { return }
 

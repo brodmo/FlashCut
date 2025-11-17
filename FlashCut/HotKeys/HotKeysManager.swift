@@ -3,24 +3,27 @@ import Combine
 import ShortcutRecorder
 
 final class HotKeysManager {
-    private(set) var allHotKeys: [(scope: String, hotKey: AppHotKey)] = []
+    private(set) var shortcuts: [Shortcut] = []
 
     private var cancellables = Set<AnyCancellable>()
 
     private let hotKeysMonitor: HotKeysMonitorProtocol
-    private let appGroupHotKeys: AppGroupHotKeys
     private let appManager: AppManager
+    private let appGroupManager: AppGroupManager
+    private let appGroupRepository: AppGroupRepository
     private let settingsRepository: ConfigRepository
 
     init(
         hotKeysMonitor: HotKeysMonitorProtocol,
-        appGroupHotKeys: AppGroupHotKeys,
         appManager: AppManager,
+        appGroupManager: AppGroupManager,
+        appGroupRepository: AppGroupRepository,
         settingsRepository: ConfigRepository
     ) {
         self.hotKeysMonitor = hotKeysMonitor
-        self.appGroupHotKeys = appGroupHotKeys
         self.appManager = appManager
+        self.appGroupManager = appGroupManager
+        self.appGroupRepository = appGroupRepository
         self.settingsRepository = settingsRepository
 
         observe()
@@ -32,33 +35,34 @@ final class HotKeysManager {
     }
 
     func enableAll() {
-        allHotKeys.removeAll()
-        let addShortcut = { (title: String, shortcut: Shortcut) in
-            self.allHotKeys.append((title, .init(
-                keyCode: shortcut.keyCode.rawValue,
-                modifiers: shortcut.modifierFlags.rawValue
-            )))
+        shortcuts.removeAll()
+        var hotkeys: [(AppHotKey, () -> ())] = []
+
+        hotkeys += appGroupRepository.appGroups.compactMap { appGroup in
+            guard let shortcut = appGroup.shortcut else { return nil }
+            let action = { [weak self] in
+                guard let self, let updatedAppGroup = appGroupRepository.findAppGroup(with: appGroup.id) else { return }
+                appGroupManager.openAppGroup(updatedAppGroup)
+            }
+            return (shortcut, action)
         }
 
-        // App Groups
-        for (shortcut, action) in appGroupHotKeys.getHotKeys().toShortcutPairs() {
-            let action = ShortcutAction(shortcut: shortcut) { _ in
+        if let shortcut = settingsRepository.config.settings.lastAppGroup {
+            hotkeys.append((shortcut, { [weak self] in self?.appGroupManager.openLastAppGroup() }))
+        }
+
+        if let shortcut = settingsRepository.config.settings.cycleAppsInGroup {
+            hotkeys.append((shortcut, { [weak self] in self?.appManager.cycleAppsInGroup() }))
+        }
+
+        for (hotKey, action) in hotkeys {
+            guard let shortcut = hotKey.toShortcut() else { continue }
+            let shortcutAction = ShortcutAction(shortcut: shortcut) { _ in
                 action()
                 return true
             }
-
-            hotKeysMonitor.addAction(action, forKeyEvent: .down)
-            addShortcut("AppGroup", shortcut)
-        }
-
-        // App Manager
-        for (shortcut, action) in appManager.getHotKeys().toShortcutPairs() {
-            let action = ShortcutAction(shortcut: shortcut) { _ in
-                action()
-                return true
-            }
-            hotKeysMonitor.addAction(action, forKeyEvent: .down)
-            addShortcut("App Manager", shortcut)
+            hotKeysMonitor.addAction(shortcutAction, forKeyEvent: .down)
+            shortcuts.append(shortcut)
         }
     }
 

@@ -5,7 +5,6 @@ struct AppDependencies {
 
     let appGroupRepository: AppGroupRepository
     let appGroupManager: AppGroupManager
-    let appGroupHotKeys: AppGroupHotKeys
 
     let hotKeysMonitor: HotKeysMonitorProtocol = GlobalShortcutMonitor.shared
     let hotKeysManager: HotKeysManager
@@ -24,11 +23,6 @@ struct AppDependencies {
             appGroupRepository: appGroupRepository,
             settingsRepository: configRepository
         )
-        self.appGroupHotKeys = AppGroupHotKeys(
-            appGroupManager: appGroupManager,
-            appGroupRepository: appGroupRepository,
-            settingsRepository: configRepository
-        )
         self.appManager = AppManager(
             appGroupRepository: appGroupRepository,
             appGroupManager: appGroupManager,
@@ -36,8 +30,9 @@ struct AppDependencies {
         )
         self.hotKeysManager = HotKeysManager(
             hotKeysMonitor: GlobalShortcutMonitor.shared,
-            appGroupHotKeys: appGroupHotKeys,
             appManager: appManager,
+            appGroupManager: appGroupManager,
+            appGroupRepository: appGroupRepository,
             settingsRepository: configRepository
         )
     }
