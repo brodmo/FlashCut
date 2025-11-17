@@ -19,7 +19,7 @@ final class UpdatesManager {
         updaterController.updater.updateCheckInterval = 30 * 60
 
         DispatchQueue.main.async {
-            self.autoCheckForUpdates = AppDependencies.shared.generalSettings.checkForUpdatesAutomatically
+            self.autoCheckForUpdates = AppDependencies.shared.settings.checkForUpdatesAutomatically
         }
     }
 

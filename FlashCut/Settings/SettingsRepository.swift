@@ -2,57 +2,47 @@ import Combine
 import Foundation
 
 final class SettingsRepository: ObservableObject {
-    private(set) var generalSettings: GeneralSettings
-    private(set) var appGroupSettings: AppGroupSettings
+    private(set) var settings: Settings
     private(set) var appGroupRepository: AppGroupRepository?
 
-    private lazy var allSettings: [ConfigProtocol] = [
-        generalSettings,
-        appGroupSettings
-    ]
-
-    private var currentSettings = Config()
+    private var currentConfig = Config()
     private var cancellables = Set<AnyCancellable>()
     private var shouldUpdate = false
 
-    init(
-        generalSettings: GeneralSettings,
-        appGroupSettings: AppGroupSettings
-    ) {
-        self.generalSettings = generalSettings
-        self.appGroupSettings = appGroupSettings
+    init(settings: Settings) {
+        self.settings = settings
 
         loadFromDisk()
 
-        Publishers.MergeMany(allSettings.map(\.updatePublisher))
-            .sink { [weak self] in self?.updateSettings() }
+        settings.updatePublisher
+            .sink { [weak self] in self?.updateConfig() }
             .store(in: &cancellables)
     }
 
     func setAppGroupRepository(_ repository: AppGroupRepository) {
         appGroupRepository = repository
         repository.appGroupsPublisher
-            .sink { [weak self] _ in self?.updateSettings() }
+            .sink { [weak self] _ in self?.updateConfig() }
             .store(in: &cancellables)
     }
 
     func saveToDisk() {
         Logger.log("Saving settings to disk")
-        try? ConfigSerializer.serialize(filename: "config", currentSettings)
+        try? ConfigSerializer.serialize(filename: "config", currentConfig)
     }
 
     func getMinimalAppGroups() -> [MinimalAppGroup] {
-        currentSettings.appGroups ?? []
+        currentConfig.appGroups ?? []
     }
 
-    private func updateSettings() {
+    private func updateConfig() {
         guard shouldUpdate else { return }
 
-        var settings = Config()
-        allSettings.forEach { $0.update(&settings) }
+        var config = Config()
+        settings.update(&config)
 
         // Convert AppGroups to MinimalAppGroups for storage
-        settings.appGroups = appGroupRepository?.appGroups.map { group in
+        config.appGroups = appGroupRepository?.appGroups.map { group in
             MinimalAppGroup(
                 name: group.name,
                 shortcut: group.shortcut,
@@ -61,7 +51,7 @@ final class SettingsRepository: ObservableObject {
             )
         }
 
-        currentSettings = settings
+        currentConfig = config
         saveToDisk()
 
         AppDependencies.shared.hotKeysManager.refresh()
@@ -74,12 +64,12 @@ final class SettingsRepository: ObservableObject {
         shouldUpdate = false
         defer { shouldUpdate = true }
 
-        guard let settings = try? ConfigSerializer.deserialize(
+        guard let config = try? ConfigSerializer.deserialize(
             Config.self,
             filename: "config"
         ) else { return }
 
-        currentSettings = settings
-        allSettings.forEach { $0.load(from: settings) }
+        currentConfig = config
+        settings.load(from: config)
     }
 }

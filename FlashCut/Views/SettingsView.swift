@@ -1,20 +1,19 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @StateObject var generalSettings = AppDependencies.shared.generalSettings
-    @StateObject var appGroupSettings = AppDependencies.shared.appGroupSettings
+    @StateObject var settings = AppDependencies.shared.settings
     @State var isAutostartEnabled = false
 
     var body: some View {
         Form {
             Section("General") {
                 Toggle("Launch at startup", isOn: $isAutostartEnabled)
-                Toggle("Check for updates automatically", isOn: $generalSettings.checkForUpdatesAutomatically)
+                Toggle("Check for updates automatically", isOn: $settings.checkForUpdatesAutomatically)
             }
 
             Section("Shortcuts") {
-                hotkey("Cycle apps in group", for: $appGroupSettings.cycleAppsInGroup)
-                hotkey("Switch to last app group", for: $appGroupSettings.lastAppGroup)
+                hotkey("Cycle apps in group", for: $settings.cycleAppsInGroup)
+                hotkey("Switch to last app group", for: $settings.lastAppGroup)
             }
 
             Section("About") {

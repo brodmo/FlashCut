@@ -6,16 +6,16 @@ final class AppManager {
 
     private let appGroupRepository: AppGroupRepository
     private let appGroupManager: AppGroupManager
-    private let settings: AppGroupSettings
+    private let settings: Settings
 
     init(
         appGroupRepository: AppGroupRepository,
         appGroupManager: AppGroupManager,
-        appGroupSettings: AppGroupSettings
+        settings: Settings
     ) {
         self.appGroupRepository = appGroupRepository
         self.appGroupManager = appGroupManager
-        self.settings = appGroupSettings
+        self.settings = settings
     }
 
     func getHotKeys() -> [(AppHotKey, () -> ())] {

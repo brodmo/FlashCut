@@ -3,7 +3,7 @@ import AppKit
 final class AppGroupHotKeys {
     private let appGroupManager: AppGroupManager
     private let appGroupRepository: AppGroupRepository
-    private let appGroupSettings: AppGroupSettings
+    private let settings: Settings
 
     init(
         appGroupManager: AppGroupManager,
@@ -12,7 +12,7 @@ final class AppGroupHotKeys {
     ) {
         self.appGroupManager = appGroupManager
         self.appGroupRepository = appGroupRepository
-        self.appGroupSettings = settingsRepository.appGroupSettings
+        self.settings = settingsRepository.settings
     }
 
     func getHotKeys() -> [(AppHotKey, () -> ())] {
@@ -36,7 +36,7 @@ final class AppGroupHotKeys {
     }
 
     private func getLastAppGroupHotKey() -> (AppHotKey, () -> ())? {
-        guard let shortcut = appGroupSettings.lastAppGroup else { return nil }
+        guard let shortcut = settings.lastAppGroup else { return nil }
 
         let action: () -> () = { [weak self] in
             self?.appGroupManager.openLastAppGroup()
