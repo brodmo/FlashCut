@@ -6,12 +6,12 @@ final class SettingsRepository: ObservableObject {
     private(set) var appGroupSettings: AppGroupSettings
     private(set) var appGroupRepository: AppGroupRepository?
 
-    private lazy var allSettings: [SettingsProtocol] = [
+    private lazy var allSettings: [ConfigProtocol] = [
         generalSettings,
         appGroupSettings
     ]
 
-    private var currentSettings = AppSettings()
+    private var currentSettings = Config()
     private var cancellables = Set<AnyCancellable>()
     private var shouldUpdate = false
 
@@ -48,7 +48,7 @@ final class SettingsRepository: ObservableObject {
     private func updateSettings() {
         guard shouldUpdate else { return }
 
-        var settings = AppSettings()
+        var settings = Config()
         allSettings.forEach { $0.update(&settings) }
 
         // Convert AppGroups to MinimalAppGroups for storage
@@ -75,7 +75,7 @@ final class SettingsRepository: ObservableObject {
         defer { shouldUpdate = true }
 
         guard let settings = try? ConfigSerializer.deserialize(
-            AppSettings.self,
+            Config.self,
             filename: "config"
         ) else { return }
 

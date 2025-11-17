@@ -20,19 +20,19 @@ final class AppGroupSettings: ObservableObject {
     }
 }
 
-extension AppGroupSettings: SettingsProtocol {
+extension AppGroupSettings: ConfigProtocol {
     var updatePublisher: AnyPublisher<(), Never> {
         updateSubject.eraseToAnyPublisher()
     }
 
-    func load(from appSettings: AppSettings) {
+    func load(from appSettings: Config) {
         observer = nil
         lastAppGroup = appSettings.lastAppGroup
         cycleAppsInGroup = appSettings.cycleAppsInGroup
         observe()
     }
 
-    func update(_ appSettings: inout AppSettings) {
+    func update(_ appSettings: inout Config) {
         appSettings.lastAppGroup = lastAppGroup
         appSettings.cycleAppsInGroup = cycleAppsInGroup
     }

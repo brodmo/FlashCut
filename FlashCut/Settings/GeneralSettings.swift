@@ -18,18 +18,18 @@ final class GeneralSettings: ObservableObject {
     }
 }
 
-extension GeneralSettings: SettingsProtocol {
+extension GeneralSettings: ConfigProtocol {
     var updatePublisher: AnyPublisher<(), Never> {
         updateSubject.eraseToAnyPublisher()
     }
 
-    func load(from appSettings: AppSettings) {
+    func load(from appSettings: Config) {
         observer = nil
         checkForUpdatesAutomatically = appSettings.checkForUpdatesAutomatically ?? false
         observe()
     }
 
-    func update(_ appSettings: inout AppSettings) {
+    func update(_ appSettings: inout Config) {
         appSettings.checkForUpdatesAutomatically = checkForUpdatesAutomatically
     }
 }

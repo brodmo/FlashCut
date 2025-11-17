@@ -5,7 +5,7 @@ struct MinimalAppGroup: Codable {
     var target: String?
 }
 
-struct AppSettings: Codable {
+struct Config: Codable {
     enum CodingKeys: String, CodingKey {
         case checkForUpdatesAutomatically
         case lastAppGroup
