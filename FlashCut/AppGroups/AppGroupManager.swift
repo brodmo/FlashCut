@@ -81,7 +81,11 @@ final class AppGroupManager: ObservableObject {
         Logger.log("Launching primary app: \(app.name)")
 
         // Note: OpenConfiguration activates by default (brings app to foreground)
-        NSWorkspace.shared.openApplication(at: appUrl, configuration: .init()) { app, error in
+        let configuration = NSWorkspace.OpenConfiguration()
+        // Prevent Firefox troubleshoot mode dialog when modifier keys are held
+        // (common when launching via keyboard shortcuts)
+        configuration.environment = ["MOZ_DISABLE_SAFE_MODE_KEY": "1"]
+        NSWorkspace.shared.openApplication(at: appUrl, configuration: configuration) { app, error in
             if let error {
                 Logger.log("Failed to launch \(app?.localizedName ?? "app"): \(error.localizedDescription)")
             } else if let app {
