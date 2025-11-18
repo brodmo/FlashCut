@@ -4,7 +4,7 @@ import Combine
 final class AppGroupManager: ObservableObject {
     // Minimal state for cycling and recent appGroup switching
     private var lastAppGroup: AppGroup?
-    private var previousAppGroup: AppGroup?
+    private var currentAppGroup: AppGroup?
 
     // Track recently opened apps to find most recent when opening a group
     private var recentApps: [String: Date] = [:] // bundleIdentifier -> timestamp
@@ -34,18 +34,39 @@ final class AppGroupManager: ObservableObject {
         recentApps[bundleId] = Date()
     }
 
-    private func findApp(in appGroup: AppGroup) {
-        // Determine which app to launch: target app or most recently opened
-        let appToLaunch = appGroup.targetApp ?? appGroup.apps
-            .max(by: { app1, app2 in
-                let time1 = recentApps[app1.bundleIdentifier] ?? .distantPast
-                let time2 = recentApps[app2.bundleIdentifier] ?? .distantPast
-                return time1 < time2
-            })
-
-        if let appToLaunch {
-            launchApp(appToLaunch)
+    private func openApp(in appGroup: AppGroup) {
+        if let targetApp = appGroup.targetApp {
+            // Target app: launch even if not running
+            launchApp(targetApp)
+        } else {
+            // No target app: activate most recent running app
+            if let mostRecentRunning = findMostRecentRunningApp(from: appGroup.apps) {
+                activateRunningApp(mostRecentRunning)
+            }
         }
+    }
+
+    private func findMostRecentRunningApp(from apps: [MacApp]) -> MacApp? {
+        let runningApps = NSWorkspace.shared.runningApplications
+        let runningGroupApps = apps.filter { app in
+            runningApps.contains { $0.bundleIdentifier == app.bundleIdentifier }
+        }
+        return runningGroupApps.max(by: { app1, app2 in
+            let time1 = recentApps[app1.bundleIdentifier] ?? .distantPast
+            let time2 = recentApps[app2.bundleIdentifier] ?? .distantPast
+            return time1 < time2
+        })
+    }
+
+    private func activateRunningApp(_ app: MacApp) {
+        guard let runningApp = NSWorkspace.shared.runningApplications.first(where: {
+            $0.bundleIdentifier == app.bundleIdentifier
+        }) else {
+            Logger.log("App not running, cannot activate: \(app.name)")
+            return
+        }
+        Logger.log("Activating app: \(app.name)")
+        runningApp.activate()
     }
 
     private func launchApp(_ app: MacApp) {
@@ -68,6 +89,7 @@ final class AppGroupManager: ObservableObject {
 }
 
 // MARK: - AppGroup Actions
+
 extension AppGroupManager {
     /// Opens the specified app group by activating one of its apps.
     ///
@@ -81,17 +103,11 @@ extension AppGroupManager {
         Logger.log("")
         Logger.log("APP GROUP: \(appGroup.name)")
         Logger.log("----")
-
-        // Track previous for recent appGroup switching
-        if let last = lastAppGroup, last.id != appGroup.id {
-            previousAppGroup = last
+        if let last = currentAppGroup, last.id != appGroup.id {
+            lastAppGroup = last
         }
-
-        // Remember for cycling
-        lastAppGroup = appGroup
-
-        // Launch an app in the group
-        findApp(in: appGroup)
+        currentAppGroup = appGroup
+        openApp(in: appGroup)
     }
 
     /// Switches to the previously active app group (Alt+Tab-like behavior).
@@ -100,11 +116,9 @@ extension AppGroupManager {
     /// enabling quick switching between two groups. Does nothing if there is no
     /// previous group or if the previous group no longer exists.
     func openLastAppGroup() {
-        // Alt+Tab-like behavior for app groups: switch to previous appGroup
-        guard let previous = previousAppGroup else { return }
+        guard let previous = lastAppGroup else { return }
         // Verify the appGroup still exists in the repository
         guard appGroupRepository.findAppGroup(with: previous.id) != nil else { return }
-
         openAppGroup(previous)
     }
 }
