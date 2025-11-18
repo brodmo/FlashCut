@@ -4,11 +4,6 @@ import Foundation
 final class AppGroupRepository: ObservableObject {
     @Published private(set) var appGroups: [AppGroup] = []
 
-    var appGroupsPublisher: AnyPublisher<[AppGroup], Never> {
-        appGroupsSubject.eraseToAnyPublisher()
-    }
-
-    private let appGroupsSubject = PassthroughSubject<[AppGroup], Never>()
     private let configRepository: ConfigRepository
 
     init(configRepository: ConfigRepository) {
@@ -69,6 +64,5 @@ final class AppGroupRepository: ObservableObject {
 
     func save() {
         configRepository.updateAppGroups(appGroups)
-        appGroupsSubject.send(appGroups)
     }
 }
