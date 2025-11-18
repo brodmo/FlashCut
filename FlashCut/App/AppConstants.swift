@@ -1,4 +1,4 @@
-import AppKit
+import Foundation
 
 enum AppConstants {
     static let mostRecentOption = MacApp(

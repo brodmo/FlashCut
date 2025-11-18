@@ -1,5 +1,4 @@
 import AppKit
-import Foundation
 import UniformTypeIdentifiers
 
 final class FileChooser {

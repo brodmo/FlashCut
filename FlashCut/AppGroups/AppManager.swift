@@ -1,5 +1,4 @@
 import AppKit
-import Foundation
 
 final class AppManager {
     var currentApp: NSRunningApplication? { NSWorkspace.shared.frontmostApplication }
