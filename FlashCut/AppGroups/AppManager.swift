@@ -5,16 +5,13 @@ final class AppManager {
 
     private let appGroupRepository: AppGroupRepository
     private let appGroupManager: AppGroupManager
-    private let settings: Settings
 
     init(
         appGroupRepository: AppGroupRepository,
-        appGroupManager: AppGroupManager,
-        settings: Settings
+        appGroupManager: AppGroupManager
     ) {
         self.appGroupRepository = appGroupRepository
         self.appGroupManager = appGroupManager
-        self.settings = settings
     }
 
     /// Cycles to the next running app within the current app's group.

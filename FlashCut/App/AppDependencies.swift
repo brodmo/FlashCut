@@ -22,8 +22,7 @@ struct AppDependencies {
         self.appGroupManager = AppGroupManager(appGroupRepository: appGroupRepository)
         self.appManager = AppManager(
             appGroupRepository: appGroupRepository,
-            appGroupManager: appGroupManager,
-            settings: configRepository.config.settings
+            appGroupManager: appGroupManager
         )
         self.hotKeysManager = HotKeysManager(
             hotKeysMonitor: GlobalShortcutMonitor.shared,
