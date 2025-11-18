@@ -51,7 +51,11 @@ struct AppGroupCell: View {
             }
             .onSubmit {
                 let name = visibleName.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !name.isEmpty, name != appGroup.name else { return }
+                guard !name.isEmpty else {
+                    visibleName = appGroup.name
+                    return
+                }
+                guard name != appGroup.name else { return }
                 appGroup.name = name
                 appGroupRepository.save() // New app groups are saved to disk here, not before
                 visibleName = name
