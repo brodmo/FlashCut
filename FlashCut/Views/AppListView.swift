@@ -58,7 +58,15 @@ struct AppListView<TrailingButtons: View>: View {
         guard let appUrl else { return }
 
         let appName = appUrl.appName
-        let appBundleId = appUrl.bundleIdentifier ?? ""
+
+        guard let appBundleId = appUrl.bundleIdentifier else {
+            Alert.showOkAlert(
+                title: "Invalid Application",
+                message: "Unable to determine bundle identifier for \(appName)"
+            )
+            return
+        }
+
         let runningApp = NSWorkspace.shared.runningApplications.first { $0.bundleIdentifier == appBundleId }
         let isAgent = appUrl.bundle?.isAgent == true && (runningApp == nil || runningApp?.activationPolicy != .regular)
 
