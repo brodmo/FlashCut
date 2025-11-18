@@ -6,11 +6,17 @@ struct AppGroupConfigurationView: View {
 
     private let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
 
+    private let mostRecentOption = MacApp(
+        name: "(Most recent)",
+        bundleIdentifier: "flashcut.most-recent",
+        iconPath: nil
+    )
+
     private var targetAppBinding: Binding<MacApp?> {
         Binding(
-            get: { appGroup.targetApp ?? AppConstants.mostRecentOption },
+            get: { appGroup.targetApp ?? mostRecentOption },
             set: { newValue in
-                appGroup.targetApp = newValue == AppConstants.mostRecentOption ? nil : newValue
+                appGroup.targetApp = newValue == mostRecentOption ? nil : newValue
                 appGroupRepository.save()
             }
         )
@@ -34,7 +40,7 @@ struct AppGroupConfigurationView: View {
             HStack(spacing: 4) {
                 Text("Open").frame(width: 40, alignment: .leading)
                 Picker("", selection: targetAppBinding) {
-                    let targetAppOptions = [AppConstants.mostRecentOption] + appGroup.apps
+                    let targetAppOptions = [mostRecentOption] + appGroup.apps
                     ForEach(targetAppOptions, id: \.self) { app in
                         Text(app.name)
                             .lineLimit(1)
