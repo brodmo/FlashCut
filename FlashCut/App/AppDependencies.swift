@@ -32,5 +32,10 @@ struct AppDependencies {
             appGroupRepository: appGroupRepository,
             settingsRepository: configRepository
         )
+
+        // Set up callback to refresh hotkeys when config changes
+        configRepository.onConfigChanged = { [weak hotKeysManager] in
+            hotKeysManager?.refresh()
+        }
     }
 }

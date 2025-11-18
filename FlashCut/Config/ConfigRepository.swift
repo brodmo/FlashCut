@@ -3,6 +3,7 @@ import Foundation
 @Observable
 final class ConfigRepository {
     private(set) var config: Config
+    var onConfigChanged: (() -> ())?
 
     init() {
         if let loadedConfig = try? ConfigSerializer.deserialize(Config.self, filename: "config") {
@@ -22,7 +23,7 @@ final class ConfigRepository {
         } catch {
             Logger.log("Failed to save config: \(error)")
         }
-        AppDependencies.shared.hotKeysManager.refresh()
+        onConfigChanged?()
     }
 
     // MARK: - Settings API
