@@ -1,15 +1,5 @@
 import ShortcutRecorder
 
-extension [(AppHotKey, () -> ())] {
-    func toShortcutPairs() -> [(Shortcut, () -> ())] {
-        map { ($0.0.toShortcut(), $0.1) }
-            .compactMap {
-                guard let shortcut = $0.0 else { return nil }
-                return (shortcut, $0.1)
-            }
-    }
-}
-
 extension AppHotKey {
     func toShortcut() -> Shortcut? {
         let components = value.components(separatedBy: "+")
