@@ -66,6 +66,9 @@ final class AppGroupManager: ObservableObject {
             return
         }
         Logger.log("Activating app: \(app.name)")
+        if runningApp.isHidden {
+            runningApp.unhide()
+        }
         runningApp.activate()
     }
 
