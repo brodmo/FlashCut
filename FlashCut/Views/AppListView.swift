@@ -7,7 +7,6 @@ struct AppListView<TrailingButtons: View>: View {
     @ViewBuilder let trailingButtons: () -> TrailingButtons
 
     private let repository = AppDependencies.shared.appGroupRepository
-    private let appGroupManager = AppDependencies.shared.appGroupManager
 
     var body: some View {
         VStack(alignment: .leading) {
