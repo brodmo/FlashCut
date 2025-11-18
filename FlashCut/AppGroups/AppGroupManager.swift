@@ -69,6 +69,13 @@ final class AppGroupManager: ObservableObject {
 
 // MARK: - AppGroup Actions
 extension AppGroupManager {
+    /// Opens the specified app group by activating one of its apps.
+    ///
+    /// If the group has a target app configured, that app is activated.
+    /// Otherwise, the most recently used app from the group is activated.
+    /// This method also tracks group history for Alt+Tab-like switching.
+    ///
+    /// - Parameter appGroup: The app group to open
     func openAppGroup(_ appGroup: AppGroup) {
         Logger.log("")
         Logger.log("")
@@ -87,6 +94,11 @@ extension AppGroupManager {
         findApp(in: appGroup)
     }
 
+    /// Switches to the previously active app group (Alt+Tab-like behavior).
+    ///
+    /// This method activates the app group that was active before the current one,
+    /// enabling quick switching between two groups. Does nothing if there is no
+    /// previous group or if the previous group no longer exists.
     func openLastAppGroup() {
         // Alt+Tab-like behavior for app groups: switch to previous appGroup
         guard let previous = previousAppGroup else { return }

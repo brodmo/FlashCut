@@ -17,6 +17,14 @@ final class AppManager {
         self.settings = settings
     }
 
+    /// Cycles to the next running app within the current app's group.
+    ///
+    /// Automatically detects which group the frontmost app belongs to,
+    /// then activates the next running app in that group. Wraps around
+    /// to the beginning of the list after reaching the last app.
+    ///
+    /// Does nothing if the current app is not in any group or if there
+    /// are no other running apps in the group.
     func cycleAppsInGroup() {
         guard let (index, apps) = getCurrentAppIndex() else { return }
 

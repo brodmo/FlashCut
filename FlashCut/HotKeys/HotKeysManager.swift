@@ -29,11 +29,23 @@ final class HotKeysManager {
         observe()
     }
 
+    /// Refreshes all hotkey registrations by disabling and re-enabling them.
+    ///
+    /// Call this method after configuration changes to update the active hotkeys
+    /// to match the current settings and app groups.
     func refresh() {
         disableAll()
         enableAll()
     }
 
+    /// Registers all hotkeys from app groups and settings with the system.
+    ///
+    /// This method registers global hotkeys for:
+    /// - Each app group's activation shortcut
+    /// - The "last app group" switch shortcut (if configured)
+    /// - The "cycle apps in group" shortcut (if configured)
+    ///
+    /// Clears any previously registered shortcuts before registering new ones.
     func enableAll() {
         shortcuts.removeAll()
         var hotkeys: [(AppHotKey, () -> ())] = []
@@ -66,6 +78,10 @@ final class HotKeysManager {
         }
     }
 
+    /// Unregisters all hotkeys from the system.
+    ///
+    /// Call this method when the app is shutting down or before
+    /// re-registering hotkeys with different configurations.
     func disableAll() {
         hotKeysMonitor.removeAllActions()
     }
