@@ -69,7 +69,7 @@ final class AppGroupManager: ObservableObject {
         if runningApp.isHidden {
             runningApp.unhide()
         }
-        runningApp.activate()
+        runningApp.activate() // TODO: Maybe consolidate with the cycle apps activation
     }
 
     private func launchApp(_ app: MacApp) {
