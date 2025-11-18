@@ -9,8 +9,8 @@ extension Bundle {
     }
 
     var isAgent: Bool {
-        infoDictionary?["LSUIElement"] as? String == "1" ||
-            infoDictionary?["LSUIElement"] as? Bool == true
+        (infoDictionary?["LSUIElement"] as? String) == "1" ||
+            (infoDictionary?["LSUIElement"] as? Bool) == true
     }
 
     var iconPath: String {

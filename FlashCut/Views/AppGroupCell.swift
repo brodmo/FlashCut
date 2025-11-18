@@ -12,6 +12,10 @@ struct AppGroupCell: View {
     let appGroupManager: AppGroupManager = AppDependencies.shared.appGroupManager
     let appGroupRepository: AppGroupRepository = AppDependencies.shared.appGroupRepository
 
+    private var hasInvalidApps: Bool {
+        appGroup.apps.contains(where: \.bundleIdentifier.isEmpty)
+    }
+
     var body: some View {
         HStack(spacing: 4) {
             nameField
@@ -19,9 +23,7 @@ struct AppGroupCell: View {
                 editButton
             }
         }
-        .foregroundColor( // broken app indication
-            appGroup.apps.contains(where: \.bundleIdentifier.isEmpty) ? .errorRed : .primary
-        )
+        .foregroundColor(hasInvalidApps ? .errorRed : .primary)
         .modifier(AppGroupDropModifier(handleDrop: handleDrop))
     }
 
