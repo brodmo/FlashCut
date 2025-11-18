@@ -17,7 +17,11 @@ final class ConfigRepository {
 
     private func save() {
         Logger.log("Saving config to disk")
-        try? ConfigSerializer.serialize(filename: "config", config)
+        do {
+            try ConfigSerializer.serialize(filename: "config", config)
+        } catch {
+            Logger.log("Failed to save config: \(error)")
+        }
         AppDependencies.shared.hotKeysManager.refresh()
     }
 

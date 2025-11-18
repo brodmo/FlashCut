@@ -9,7 +9,14 @@ enum ConfigSerializer {
     static func serialize(filename: String, _ value: some Encodable) throws {
         let url = getUrl(for: filename)
         let data = try encoder.encode(value)
-        try? url.createIntermediateDirectories()
+
+        do {
+            try url.createIntermediateDirectories()
+        } catch {
+            Logger.log("Failed to create config directory: \(error)")
+            throw error
+        }
+
         try data.write(to: url)
     }
 
