@@ -69,10 +69,10 @@ final class AppGroupManager: ObservableObject {
         if runningApp.isHidden {
             runningApp.unhide()
         }
-        runningApp.activate() // TODO: Maybe consolidate with the cycle apps activation
+        runningApp.activate()
     }
 
-    private func launchApp(_ app: MacApp) {
+    private func launchApp(_ app: MacApp) {  // TODO always use openApplication instead of activate for robustness
         guard let appUrl = NSWorkspace.shared.urlForApplication(withBundleIdentifier: app.bundleIdentifier) else {
             Logger.log("Failed to find app URL for: \(app.name)")
             return
