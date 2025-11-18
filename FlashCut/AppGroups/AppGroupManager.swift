@@ -11,10 +11,7 @@ final class AppGroupManager: ObservableObject {
 
     private let appGroupRepository: AppGroupRepository
 
-    init(
-        appGroupRepository: AppGroupRepository,
-        settingsRepository: ConfigRepository
-    ) {
+    init(appGroupRepository: AppGroupRepository) {
         self.appGroupRepository = appGroupRepository
 
         // Track app opens to find most recently used app in a group

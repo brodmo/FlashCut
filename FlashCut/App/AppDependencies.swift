@@ -19,10 +19,7 @@ struct AppDependencies {
         self.configRepository = ConfigRepository()
         self.appGroupRepository = AppGroupRepository(configRepository: configRepository)
 
-        self.appGroupManager = AppGroupManager(
-            appGroupRepository: appGroupRepository,
-            settingsRepository: configRepository
-        )
+        self.appGroupManager = AppGroupManager(appGroupRepository: appGroupRepository)
         self.appManager = AppManager(
             appGroupRepository: appGroupRepository,
             appGroupManager: appGroupManager,
