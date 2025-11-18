@@ -7,9 +7,11 @@ struct FlashCutApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.openWindow) private var openWindow
 
+    private static let tooltipDelayMilliseconds = 500 // Faster than default ~1000ms
+    private static let windowCloseAnimationDelay: TimeInterval = 0.1
+
     init() {
-        // Set faster tooltip delay (500ms instead of default ~1000ms)
-        UserDefaults.standard.set(500, forKey: "NSInitialToolTipDelay")
+        UserDefaults.standard.set(Self.tooltipDelayMilliseconds, forKey: "NSInitialToolTipDelay")
     }
 
     var body: some Scene {
@@ -47,7 +49,7 @@ struct FlashCutApp: App {
 
     private func hideDockIconIfNoWindows() {
         // Use a small delay to let window close animation complete
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.windowCloseAnimationDelay) {
             let hasVisibleWindows = NSApp.windows.contains { window in
                 window.isVisible && (
                     window.identifier?.rawValue == "main" ||
